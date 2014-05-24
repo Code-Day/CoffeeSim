@@ -3,6 +3,7 @@ package com.android.coffeesim.resourcemanager;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.options.EngineOptions;
@@ -28,7 +29,6 @@ import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.adt.io.in.IInputStreamOpener;
 import org.andengine.util.debug.Debug;
-
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.opengl.texture.ITexture;
 import org.andengine.opengl.texture.region.ITextureRegion;
@@ -37,12 +37,6 @@ import org.andengine.opengl.texture.region.ITextureRegion;
  * David Parsons
  */
 public class ResourceManager {
-	// ===========================================================
-	// Constants
-	// ===========================================================
-
-//	private static final int CAMERA_WIDTH = 480;
-//	private static final int CAMERA_HEIGHT = 320;
 
 	// ===========================================================
 	// Fields
@@ -52,32 +46,13 @@ public class ResourceManager {
 	private ITexture mTexture;
 	private ITextureRegion mFaceTextureRegion;	
 	
-	// for actual sprites
-	private BuildableBitmapTextureAtlas mBitmapTextureAtlas;
-	
-	private TiledTextureRegion mSnapdragonTextureRegion;
-	private TiledTextureRegion mHelicopterTextureRegion;
-	private TiledTextureRegion mBananaTextureRegion;
-	private TiledTextureRegion mFaceTextureRegionT;
-
-	// ===========================================================
-	// Constructors
-	// ===========================================================
-
-	// ===========================================================
-	// Getter & Setter
-	// ===========================================================
-
-	// ===========================================================
-	// Methods for/from SuperClass/Interfaces
-	// ===========================================================
-
-//	@Override
-//	public EngineOptions onCreateEngineOptions() {
-//		final Camera camera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
-//
-//		return new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), camera);
-//	}
+	// for actual sprites (later)
+//	private BuildableBitmapTextureAtlas mBitmapTextureAtlas;
+//	
+//	private TiledTextureRegion mSnapdragonTextureRegion;
+//	private TiledTextureRegion mHelicopterTextureRegion;
+//	private TiledTextureRegion mBananaTextureRegion;
+//	private TiledTextureRegion mFaceTextureRegionT;
 
 	// ===========================================================
 	// This function grabs a single image to load before game starts
@@ -97,61 +72,56 @@ public class ResourceManager {
 		}
 	}
 	
+	// ===========================================================
+	// This function grabs a single image to load before game starts
+	// ===========================================================
 	@Override
 	public void onCreateResources() {
-		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
-
-		this.mBitmapTextureAtlas = new BuildableBitmapTextureAtlas(this.getTextureManager(), 512, 256, TextureOptions.NEAREST);
-//		this.mBitmapTextureAtlas = new BuildableBitmapTextureAtlas(this.getTextureManager(), 512, 256, TextureOptions.BILINEAR);
+		// hashmap for texture regions
+		HashMap<String, TiledTextureRegion> images = new HashMap<String, TiledTextureRegion>();
 		
-		this.mSnapdragonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "snapdragon_tiled.png", 4, 3);
-		this.mHelicopterTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "helicopter_tiled.png", 2, 2);
-		this.mBananaTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "banana_tiled.png", 4, 2);
-		this.mFaceTextureRegionT = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "face_box_tiled.png", 2, 1);
+		// texture
+		BitmapTextureAtlas playerTexture;
+		// texture region
+		TiledTextureRegion playerTextureRegion;
+				
+		// Set the gfx folder as our base
+		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
+		
+		// set playerTexture (note: width and hight must be set to power of x^2)
+		playerTexture = BitmapTextureAtlas(getTextureManager(), 64, 64);
+		// grab the image and put it in a region (0,0 stands for top left corner of the atlas and gets the texture region)
+		playerTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(playerTexture, this,"face_box.png",0,0);
+		
+		// load all the textures (can unload: playerTexture.unload();)
+		playerTexture.load();
+		
+		// add all the textures to the hashmap
+		images.put("face_box", playerTextureRegion);
+		
+		// create all the sprites
+		// TODO: understand pVertexBufferObject (our engine should be passed in)
+		Sprite sPlayer = new Sprite(CAMERA_WIDTH/2, CAMERA_HEIGHT/2, playerTextureRegion, this.mEngine.getVertexBufferObjectManager());
+		// TEST
+		sPlayer.setRotation(45.0f);
+		// ADD TO SCENE???
+		this.scene.attachChild(sPlayer);
 
-		try {
-			this.mBitmapTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 0, 1));
-			this.mBitmapTextureAtlas.load();
-		} catch (TextureAtlasBuilderException e) {
-			Debug.e(e);
-		}
+//		// ADVNACED METHOD FOR SPRITES... LATER
+//		this.mBitmapTextureAtlas = new BuildableBitmapTextureAtlas(this.getTextureManager(), 512, 256, TextureOptions.NEAREST);
+//		//this.mBitmapTextureAtlas = new BuildableBitmapTextureAtlas(this.getTextureManager(), 512, 256, TextureOptions.BILINEAR);
+//		
+//		this.mSnapdragonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "snapdragon_tiled.png", 4, 3);
+//		this.mHelicopterTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "helicopter_tiled.png", 2, 2);
+//		this.mBananaTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "banana_tiled.png", 4, 2);
+//		this.mFaceTextureRegionT = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "face_box_tiled.png", 2, 1);
+//
+//		try {
+//			this.mBitmapTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 0, 1));
+//			this.mBitmapTextureAtlas.load();
+//		} catch (TextureAtlasBuilderException e) {
+//			Debug.e(e);
+//		}
 	}
 
-	@Override
-	public Scene onCreateScene() {
-		this.mEngine.registerUpdateHandler(new FPSLogger());
-
-		final Scene scene = new Scene();
-		scene.setBackground(new Background(0.09804f, 0.6274f, 0.8784f));
-
-		/* Quickly twinkling face. */
-		final AnimatedSprite face = new AnimatedSprite(100, 50, this.mFaceTextureRegionT, this.getVertexBufferObjectManager());
-		face.animate(100);
-		scene.attachChild(face);
-
-		/* Continuously flying helicopter. */
-		final AnimatedSprite helicopter = new AnimatedSprite(320, 50, this.mHelicopterTextureRegion, this.getVertexBufferObjectManager());
-		helicopter.animate(new long[] { 100, 100 }, 1, 2, true);
-		scene.attachChild(helicopter);
-
-		/* Snapdragon. */
-		final AnimatedSprite snapdragon = new AnimatedSprite(300, 200, this.mSnapdragonTextureRegion, this.getVertexBufferObjectManager());
-		snapdragon.animate(100);
-		scene.attachChild(snapdragon);
-
-		/* Funny banana. */
-		final AnimatedSprite banana = new AnimatedSprite(100, 220, this.mBananaTextureRegion, this.getVertexBufferObjectManager());
-		banana.animate(100);
-		scene.attachChild(banana);
-
-		return scene;
-	}
-
-	// ===========================================================
-	// Methods
-	// ===========================================================
-
-	// ===========================================================
-	// Inner and Anonymous Classes
-	// ===========================================================
 }
