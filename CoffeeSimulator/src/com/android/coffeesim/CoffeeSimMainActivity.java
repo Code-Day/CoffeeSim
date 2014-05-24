@@ -1,4 +1,6 @@
+
 package com.android.coffeesim;
+
 
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.handler.timer.ITimerCallback;
@@ -108,6 +110,4 @@ public class CoffeeSimMainActivity extends BaseGameActivity {
 		
 		pOnPopulateSceneCallback.onPopulateSceneFinished();
 	}
-
-	
 }
