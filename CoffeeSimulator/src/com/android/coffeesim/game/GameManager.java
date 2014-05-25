@@ -1,5 +1,7 @@
 package com.android.coffeesim.game;
 
+import org.andengine.engine.Engine;
+
 import com.android.coffeesim.CoffeeSimMainActivity;
 
 public class GameManager {
