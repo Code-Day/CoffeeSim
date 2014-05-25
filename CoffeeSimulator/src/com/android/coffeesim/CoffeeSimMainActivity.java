@@ -71,10 +71,10 @@ public class CoffeeSimMainActivity extends BaseGameActivity {
 		
 		//make the managers
 		resourceManager = new ResourceManager(mEngine, this);
-//		physicsManager = new PhysicsManager(mEngine, resourceManager);		
-//		gameManager = new GameManager(this, mEngine, resourceManager, physicsManager);
+		
+		gameManager = new GameManager(this, mEngine, resourceManager, physicsManager);
 		sceneManager = new SceneManager(this, mEngine, resourceManager);
-
+		physicsManager = new PhysicsManager(mEngine, sceneManager, resourceManager);
 		
 		//load splash resources
 		resourceManager.onCreateSplashResources();
@@ -89,7 +89,7 @@ public class CoffeeSimMainActivity extends BaseGameActivity {
 		
 		//returns the splash scene
 		pOnCreateSceneCallback.onCreateSceneFinished(sceneManager
-				.createScene(AllScenes.SPLASH));
+				.createScene(AllScenes.SPLASH, null));
 		
 	}
 
@@ -113,9 +113,10 @@ public class CoffeeSimMainActivity extends BaseGameActivity {
 						// TODO Auto-generated method stub
 						mEngine.unregisterUpdateHandler(pTimerHandler);
 						resourceManager.onCreateResources();
-						sceneManager.createScene(AllScenes.MENU);
-						sceneManager.createScene(AllScenes.GAME);
+						sceneManager.createScene(AllScenes.MENU, physicsManager);
+						sceneManager.createScene(AllScenes.GAME, physicsManager);
 						sceneManager.setCurrentScene(AllScenes.MENU);
+						
 					}
 				}));
 		
