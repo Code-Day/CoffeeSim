@@ -1,6 +1,9 @@
 package com.android.coffeesim.physics;
 
+import java.util.ArrayList;
+
 import org.andengine.engine.Engine;
+import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.IOnAreaTouchListener;
 import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.ITouchArea;
@@ -23,19 +26,21 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.Joint;
+import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
+import com.badlogic.gdx.physics.box2d.joints.LineJointDef;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
+import com.badlogic.gdx.physics.box2d.joints.PulleyJointDef;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 
 public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListener
 {
-	private final short ENV_CAT = 1;
-	private final short DROP_CAT = 2;
-	private final short COFF_CAT = 4;
+	public static final short ENV_CAT = 1;
+	public static final short DROP_CAT = 2;
+	public static final short COFF_CAT = 4;
 	
-	private final short ENV_MASK = COFF_CAT + ENV_CAT + DROP_CAT;
-	private final short DROP_MASK = ENV_CAT + DROP_CAT;
-	private final short COFF_MASK = ENV_CAT + COFF_CAT;
+	private final short ENV_MASK = PhysicsManager.COFF_CAT + PhysicsManager.ENV_CAT + PhysicsManager.DROP_CAT;
 	
 	private ResourceManager mResourceManager;
 	private SceneManager mSceneManager;
@@ -44,12 +49,19 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 	private SparseArray <MouseJoint> mMiceMap;
 	private Engine mEngine;
 	
-	private FixtureDef dropletFix;
-	private FixtureDef coffeeGrainFix;
+	private ArrayList < WaterDrop > mWaterDrops;
+	private ArrayList < CoffeeGrain > mCoffeeGrains;
+	
+	private ArrayList < Body > mBodies;
+	private ArrayList < Joint > mJoints;
+	
 	private FixtureDef wallFix;
 	
 	public PhysicsManager ( Engine pEngine, SceneManager pSceneMgr, ResourceManager pResMgr )
 	{
+		mBodies = new ArrayList < Body > ();
+		mJoints = new ArrayList < Joint > ();
+		
 		mMiceMap = new SparseArray <MouseJoint> (4);
 		mPhysWorld = new PhysicsWorld ( new Vector2 (0.0f, 9.81f), false );
 		
@@ -66,9 +78,12 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 	
 	private void createFixtureDefs ()
 	{
-		dropletFix = PhysicsFactory.createFixtureDef( 0.15f, -0.5f, 0.3f, false, DROP_CAT, DROP_MASK, (short)0 );
-		coffeeGrainFix = PhysicsFactory.createFixtureDef( 0.15f, -0.5f, 0.7f, false, COFF_CAT, COFF_MASK, (short)0 );
 		wallFix = PhysicsFactory.createFixtureDef(0, 0.5f, 0.5f, false, ENV_CAT, ENV_MASK, (short)0);
+	}
+	
+	public void dispose ()
+	{
+		this.destroyAllThings ();
 	}
 	
 	/**
@@ -76,51 +91,121 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 	 */
 	public void initializeGameScene ()
 	{
+		this.destroyAllThings ();
 		
+		createCoffeePot ();
+		createCoffeePress ();
 	}
 	
-	public void createCoffeePot ()
+	private void destroyAllThings ()
+	{
+		mPhysWorld.clearPhysicsConnectors ();
+		for ( int i = 0; i < mBodies.size (); i ++ )
+		{
+			mPhysWorld.destroyBody ( mBodies.get ( i ) );
+		}
+		for ( int i = 0; i < mJoints.size (); i ++ )
+		{
+			mPhysWorld.destroyJoint ( mJoints.get ( i ) );
+		}
+	
+		mWaterDrops.clear ();
+		mCoffeeGrains.clear ();
+		
+		mBodies.clear ();
+		mJoints.clear ();
+	}
+	
+	private void createCoffeePot ()
 	{
 		final int cX = ( int ) mEngine.getCamera ().getCenterX ();
 		final int cY = ( int ) ( mEngine.getCamera ().getHeight () - (mEngine.getCamera ().getHeight () * .2) );
 		final int W = ( int ) ( mEngine.getCamera ().getWidth () * .34f );
 		final int H = 3;
 		
+		Rectangle ground = new Rectangle ( cX, cY, W, H, this.mVertexBufferObjectManager );
+		ground.setColor ( 0, 0, 1f );
+		Rectangle left = new Rectangle ( cX, cY - W + H, H, W, this.mVertexBufferObjectManager );
+		left.setColor ( 0, 1f, 0 );
+		Rectangle right = new Rectangle ( cX + W, cY - W + H, H, W, this.mVertexBufferObjectManager );
+		right.setColor ( 1f, 0, 0 );
+		
 		Body groundBody = PhysicsFactory.createBoxBody(this.mPhysWorld, cX, cY, W, H, BodyType.StaticBody, wallFix);
 		Body leftBody = PhysicsFactory.createBoxBody(this.mPhysWorld, cX, cY - W + H, H, W, BodyType.StaticBody, wallFix);
 		Body rightBody = PhysicsFactory.createBoxBody(this.mPhysWorld, cX + W, cY - W + H, H, W, BodyType.StaticBody, wallFix);
 		
-		this.createJointBetween ( groundBody, leftBody,
+		mBodies.add ( groundBody );
+		mBodies.add ( leftBody );
+		mBodies.add ( rightBody );
+		
+		this.createWeldJointBetween ( groundBody, leftBody,
 				(cX + H/2)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT,
 				(cY + H/2)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT );
-		this.createJointBetween ( groundBody, rightBody, 
+		this.createWeldJointBetween ( groundBody, rightBody, 
 				(cX - H/2 + W)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT,
 				(cY + H/2)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT );
 		
-		Sprite coffeePotSprite = mResourceManager.getSpriteByName ( "coffeepot", 128, 384 );
+		Sprite coffeePotSprite = mResourceManager.getSpriteByName ( "coffeepot" );
+		coffeePotSprite.setSize ( W, cY - W + H );
+		
+		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( coffeePotSprite, groundBody, false, false ) );
+		mSceneManager.getCurrentScene ().attachChild ( coffeePotSprite );
+		
+		mSceneManager.getCurrentScene ().attachChild ( ground );
+		mSceneManager.getCurrentScene ().attachChild ( left );
+		mSceneManager.getCurrentScene ().attachChild ( right );
+	}
+	
+	private void createCoffeePress ()
+	{
+		final int cX = ( int ) mEngine.getCamera ().getCenterX ();
+		final int cY = ( int ) ( mEngine.getCamera ().getWidth () * .10f );
+		final int barW = ( int ) ( mEngine.getCamera ().getWidth () * .05f );
+		final int barH = ( int ) ( mEngine.getCamera ().getWidth () * .30f );
+		
+		Body handleTopBody = PhysicsFactory.createCircleBody(this.mPhysWorld, cX, cY, 32, BodyType.StaticBody, wallFix);
+		Body handleBarBody = PhysicsFactory.createBoxBody(this.mPhysWorld, cX - (barW / 2), cY, barW, barH, BodyType.StaticBody, wallFix);
+		
+		Body groundBody = PhysicsFactory.createBoxBody(this.mPhysWorld, cX, cY, W, H, BodyType.StaticBody, wallFix);
+		Body leftBody = PhysicsFactory.createBoxBody(this.mPhysWorld, cX, cY - W + H, H, W, BodyType.StaticBody, wallFix);
+		Body rightBody = PhysicsFactory.createBoxBody(this.mPhysWorld, cX + W, cY - W + H, H, W, BodyType.StaticBody, wallFix);
+		
+		mBodies.add ( groundBody );
+		mBodies.add ( leftBody );
+		mBodies.add ( rightBody );
+		
+		this.createWeldJointBetween ( handleTopBody, handleBarBody,
+				(cX + H/2)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT,
+				(cY + H/2)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT );
+		this.createWeldJointBetween ( groundBody, rightBody, 
+				(cX - H/2 + W)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT,
+				(cY + H/2)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT );
+		
+		Sprite coffeePotSprite = mResourceManager.getSpriteByName ( "coffeepot" );
+		coffeePotSprite.setSize ( W, cY - W + H );
 		
 		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( coffeePotSprite, groundBody, false, false ) );
 		mSceneManager.getCurrentScene ().attachChild ( coffeePotSprite );
 	}
 	
-	public void createCoffeePress ()
-	{
+	private void createWaterDrop ( float x, float y )
+	{	
+		Body dropletBody = PhysicsFactory.createCircleBody ( this.mPhysWorld, x, y, WaterDrop.RADIUS, BodyType.DynamicBody, WaterDrop.DROPLET_FIX );
+		mBodies.add ( dropletBody );
+		mWaterDrops.add ( new WaterDrop ( x, y, 0.0f, .61f, 1.0f ) );
+		//mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( droplet, dropletBody, true, false ) );
 		
+		//mSceneManager.getCurrentScene ().attachChild ( droplet );
 	}
 	
-	//TODO track num created for water and grains
-	public void createWaterdrop ( float x, float y )
-	{		
-		Body dropletBody = PhysicsFactory.createCircleBody ( this.mPhysWorld, x, y, 8, BodyType.DynamicBody, dropletFix );
-		Sprite droplet = mResourceManager.getSpriteByName ( "droplet", 32, 32 );
-		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( droplet, dropletBody, true, false ) );
-		mSceneManager.getCurrentScene ().attachChild ( droplet );
-	}
-	
-	public void createCoffeegrain ( float x, float y )
+	private void createCoffeegrain ( float x, float y )
 	{
-		Body coffeeGrainBody = PhysicsFactory.createCircleBody ( this.mPhysWorld, x, y, 8, BodyType.DynamicBody, coffeeGrainFix );
-		Sprite coffeegrain = mResourceManager.getSpriteByName ( "coffeegrain", 32, 32 );
+		Body coffeeGrainBody = PhysicsFactory.createCircleBody ( this.mPhysWorld, x, y, 16, BodyType.DynamicBody, CoffeeGrain.COFFEE_FIX );
+		mBodies.add ( coffeeGrainBody );
+		Sprite coffeegrain = mResourceManager.getSpriteByName ( CoffeeGrain.ASSET_NAME );
+		
+		mCoffeeGrains.add ( new CoffeeGrain () );
+		
 		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( coffeegrain, coffeeGrainBody, true, true ) );
 		mSceneManager.getCurrentScene ().attachChild ( coffeegrain );
 	}
@@ -163,8 +248,11 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 		if ( pSceneTouchEvent.isActionDown () )
 		{
 			final IAreaShape obj = ( IAreaShape ) pTouchArea;
-			mMiceMap.put ( pSceneTouchEvent.getPointerID (), this.createMouseJoint ( obj, pTouchAreaLocalX, pTouchAreaLocalY ) );
-			return true;
+			if ( pTouchArea != null )
+			{
+				mMiceMap.put ( pSceneTouchEvent.getPointerID (), this.createMouseJoint ( obj, pTouchAreaLocalX, pTouchAreaLocalY ) );
+				return true;
+			}
 		}
 		return false;
 	}
@@ -190,11 +278,36 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 		return ( MouseJoint ) this.mPhysWorld.createJoint ( mouseJointDef );
 	}
 	
-	public void createJointBetween ( final Body pA, final Body pB, final float pAnchorX, final float pAnchorY )
+	private void createLineJointBetween ( final Body pA, final Body pB, final float pAnchorX, final float pAnchorY )
 	{
+		final Vector2 anchor = Vector2Pool.obtain (pAnchorX, pAnchorY);
+		final Vector2 axis = Vector2Pool.obtain (0, 10);
+		final LineJointDef prisJointDef = new LineJointDef ();
+		prisJointDef.initialize ( pA, pB, anchor, axis );
+		prisJointDef.collideConnected = true;
+		mPhysWorld.createJoint ( prisJointDef );
+		Vector2Pool.recycle ( anchor );
+	}
+	
+	private void createWeldJointBetween ( final Body pA, final Body pB, final float pAnchorX, final float pAnchorY )
+	{
+		final Vector2 anchor = Vector2Pool.obtain (pAnchorX, pAnchorY);
 		final WeldJointDef weldJointDef = new WeldJointDef ();
-		weldJointDef.initialize ( pA, pB, Vector2Pool.obtain (pAnchorX, pAnchorY) );
+		weldJointDef.initialize ( pA, pB, anchor );
 		weldJointDef.collideConnected = true;
 		mPhysWorld.createJoint ( weldJointDef );
+		Vector2Pool.recycle ( anchor );
+	}
+	
+	private void createDistanceJointBetween ( final Body pA, final Body pB, final float pAnchorXA, final float pAnchorYA, final float pAnchorXB, final float pAnchorYB )
+	{
+		final Vector2 anchorA = Vector2Pool.obtain (pAnchorXA, pAnchorYA);
+		final Vector2 anchorB = Vector2Pool.obtain (pAnchorXB, pAnchorYB);
+		final DistanceJointDef distJointDef = new DistanceJointDef ();
+		distJointDef.initialize ( pA, pB, anchorA, anchorB );
+		distJointDef.collideConnected = true;
+		mPhysWorld.createJoint ( distJointDef );
+		Vector2Pool.recycle ( anchorA );
+		Vector2Pool.recycle ( anchorB );
 	}
 }
