@@ -4,11 +4,11 @@ package com.android.coffeesim.resourcemanager;
 import java.util.HashMap;
 
 import org.andengine.engine.Engine;
+import org.andengine.entity.sprite.ButtonSprite;
 import org.andengine.entity.sprite.Sprite;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.texture.region.ITextureRegion;
-import org.andengine.opengl.texture.region.TiledTextureRegion;
 
 import com.android.coffeesim.CoffeeSimMainActivity;
 
@@ -118,6 +118,22 @@ public class ResourceManager {
 		if (images.containsKey(theTexture)) {
 			// create dat sprite
 			Sprite sPlayer = new Sprite(w, h, images.get(theTexture), engine.getVertexBufferObjectManager());
+			// TEST
+			//sPlayer.setRotation(45.0f);
+			return sPlayer;
+		}
+		return null;
+	}
+	
+	// ===========================================================
+	// 1. check hashmap to see if we have texture
+	// 2. if we have texture, create sprite and return
+	// ===========================================================
+	public Sprite makeDatButtonSprite(String theTexture, Float w, Float h) {
+		// check dat hashmap
+		if (images.containsKey(theTexture)) {
+			// create dat sprite
+			ButtonSprite sPlayer = new ButtonSprite(w, h, images.get(theTexture), engine.getVertexBufferObjectManager());
 			// TEST
 			//sPlayer.setRotation(45.0f);
 			return sPlayer;
