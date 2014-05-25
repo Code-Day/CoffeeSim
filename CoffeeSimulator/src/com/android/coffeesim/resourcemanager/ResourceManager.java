@@ -58,7 +58,7 @@ public class ResourceManager {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("splash/");
 		
 		// set playerTexture (note: width and hight must be set to power of x^2)
-		splashTexture = new BitmapTextureAtlas(engine.getTextureManager(), 64, 64);
+		splashTexture = new BitmapTextureAtlas(engine.getTextureManager(), 256, 256);
 		// grab the image and put it in a region (0,0 stands for top left corner of the atlas and gets the texture region)
 		splashTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(splashTexture, activity,"splash.png",0,0);
 		

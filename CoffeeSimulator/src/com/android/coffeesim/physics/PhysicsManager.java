@@ -20,7 +20,8 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
 
 import android.util.SparseArray;
 
-import com.android.coffeesim.SceneManager;
+import com.android.coffeesim.resourcemanager.ResourceManager;
+import com.android.coffeesim.scene.SceneManager;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -31,12 +32,25 @@ import com.badlogic.gdx.physics.box2d.joints.DistanceJointDef;
 import com.badlogic.gdx.physics.box2d.joints.LineJointDef;
 import com.badlogic.gdx.physics.box2d.joints.MouseJoint;
 import com.badlogic.gdx.physics.box2d.joints.MouseJointDef;
-import com.badlogic.gdx.physics.box2d.joints.PulleyJointDef;
 import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 
 public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListener
 {
-	public static final short ENV_CAT = 1;
+
+	@Override
+	public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
+			ITouchArea pTouchArea, float pTouchAreaLocalX,
+			float pTouchAreaLocalY) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	/*public static final short ENV_CAT = 1;
 	public static final short DROP_CAT = 2;
 	public static final short COFF_CAT = 4;
 	
@@ -89,6 +103,7 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 	/**
 	 * Convenience method to initialize or reinitialize the main game scene
 	 */
+	/*
 	public void initializeGameScene ()
 	{
 		this.destroyAllThings ();
@@ -310,4 +325,7 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 		Vector2Pool.recycle ( anchorA );
 		Vector2Pool.recycle ( anchorB );
 	}
+	*/
+	
 }
+

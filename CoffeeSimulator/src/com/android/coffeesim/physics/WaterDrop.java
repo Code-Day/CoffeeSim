@@ -8,8 +8,8 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 
 public class WaterDrop
 {
-	private final static short DROP_MASK = PhysicsManager.ENV_CAT + PhysicsManager.DROP_CAT;
-	public static final FixtureDef DROPLET_FIX = PhysicsFactory.createFixtureDef( 0.15f, -0.5f, 0.3f, false, PhysicsManager.DROP_CAT, DROP_MASK, (short)0 );
+	//private final static short DROP_MASK = PhysicsManager.ENV_CAT + PhysicsManager.DROP_CAT;
+	//public static final FixtureDef DROPLET_FIX = PhysicsFactory.createFixtureDef( 0.15f, -0.5f, 0.3f, false, PhysicsManager.DROP_CAT, DROP_MASK, (short)0 );
 	public static final float RADIUS = 8;
 	
 	private Color mColor;
@@ -37,14 +37,6 @@ public class WaterDrop
 	public void setY ( float mY )
 	{
 		this.mY = mY;
-	}
-	public float getRadius ()
-	{
-		return mRadius;
-	}
-	public void setRadius ( float mRadius )
-	{
-		this.mRadius = mRadius;
 	}
 	public Color getColor ()
 	{
