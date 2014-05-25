@@ -73,24 +73,57 @@ public class ResourceManager {
 	// This function grabs a single image to load before game starts
 	// ===========================================================
 	public void onCreateResources() {
+//		TODO: delete all playerTexture and playerTextureRegion references
 		// texture
-		BitmapTextureAtlas playerTexture;
+		BitmapTextureAtlas backgroundTexture;
+		BitmapTextureAtlas buttonStartTexture;
+		BitmapTextureAtlas buttonWaterTexture;
+		BitmapTextureAtlas buttonCoffeeTexture;
+		BitmapTextureAtlas buttonLidTexture;
+		BitmapTextureAtlas speachTextTexture;
+		
 		// texture region
-		ITextureRegion playerTextureRegion;
+		ITextureRegion backgroundTextureRegion;
+		ITextureRegion buttonStartTextureRegion;
+		ITextureRegion buttonWaterTextureRegion;
+		ITextureRegion buttonCoffeeTextureRegion;
+		ITextureRegion buttonLidTextureRegion;
+		ITextureRegion speachTextTextureRegion;
 				
 		// Set the gfx folder as our base
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 		
 		// set playerTexture (note: width and hight must be set to power of x^2)
-		playerTexture = new BitmapTextureAtlas(engine.getTextureManager(), 1080, 1920);
+		backgroundTexture = new BitmapTextureAtlas(engine.getTextureManager(), 1080, 1920);
+		buttonStartTexture = new BitmapTextureAtlas(engine.getTextureManager(), 1080, 1920);
+		buttonWaterTexture = new BitmapTextureAtlas(engine.getTextureManager(), 1080, 1920);
+		buttonCoffeeTexture = new BitmapTextureAtlas(engine.getTextureManager(), 1080, 1920);
+		buttonLidTexture = new BitmapTextureAtlas(engine.getTextureManager(), 1080, 1920);
+		speachTextTexture = new BitmapTextureAtlas(engine.getTextureManager(), 1080, 1920);
+		
 		// grab the image and put it in a region (0,0 stands for top left corner of the atlas and gets the texture region)
-		playerTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(playerTexture, activity,"GameBackground.png",0,0);
+		backgroundTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(backgroundTexture, activity,"GameBackground.png",0,0);
+		buttonStartTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(buttonStartTexture, activity,"button_start.png",0,0);
+		buttonWaterTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(buttonWaterTexture, activity,"button_water.png",0,0);
+		buttonCoffeeTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(buttonCoffeeTexture, activity,"button_coffee.png",0,0);
+		buttonLidTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(buttonLidTexture, activity,"button_lid.png",0,0);
+		speachTextTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(speachTextTexture, activity,"speech_text.png",0,0);
 		
 		// load all the textures (can unload: playerTexture.unload();)
-		playerTexture.load();
+		backgroundTexture.load();
+		buttonStartTexture.load();
+		buttonWaterTexture.load();
+		buttonCoffeeTexture.load();
+		buttonLidTexture.load();
+		speachTextTexture.load();
 		
 		// add all the textures to the hashmap
-		images.put("background", playerTextureRegion);
+		images.put("background", backgroundTextureRegion);
+		images.put("button_start", buttonStartTextureRegion);
+		images.put("button_water", buttonWaterTextureRegion);
+		images.put("button_coffee", buttonCoffeeTextureRegion);
+		images.put("button_lid", buttonLidTextureRegion);
+		images.put("speach_text", speachTextTextureRegion);
 
 //		// ADVNACED METHOD FOR SPRITES... LATER
 //		this.mBitmapTextureAtlas = new BuildableBitmapTextureAtlas(this.getTextureManager(), 512, 256, TextureOptions.NEAREST);
