@@ -72,7 +72,7 @@ public class CoffeeSimMainActivity extends BaseGameActivity {
 		//make the managers
 		resourceManager = new ResourceManager(mEngine, this);
 		gameManager = new GameManager(this, mEngine, resourceManager, physicsManager);		
-		physicsManager = new PhysicsManager();
+		physicsManager = new PhysicsManager(mEngine, resourceManager);
 		sceneManager = new SceneManager(this, mEngine, resourceManager);
 
 		
