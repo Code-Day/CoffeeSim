@@ -3,8 +3,6 @@ package com.android.coffeesim.scene;
 import org.andengine.engine.Engine;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
-import org.andengine.entity.sprite.ButtonSprite;
-import org.andengine.entity.sprite.ButtonSprite.OnClickListener;
 
 import com.android.coffeesim.CoffeeSimMainActivity;
 
@@ -20,12 +18,19 @@ public class CoffeeSimScene {
 		SPLASH, MENU, GAME
 	}
 
+	/**
+	 * @param act - Main Activity
+	 * @param eng - The Engine
+	 */
 	public CoffeeSimScene(CoffeeSimMainActivity act, Engine eng) {
 		// TODO ADD RESOURCE MANAGER, PHYSICS MANAGER
 		activity = act;
 		engine = eng;
 	}
 	
+	/**
+	 * 
+	 */
 	public void loadSplashResources() {
 		// TODO Auto-generated method stub
 		
@@ -34,6 +39,9 @@ public class CoffeeSimScene {
 		
 	}
 
+	/**
+	 * @return The Splash Scene
+	 */
 	public Scene createSplashScene() {
 		splashScene = new Scene();
 		splashScene.setBackground(new Background(12, 0, 100));
@@ -43,6 +51,9 @@ public class CoffeeSimScene {
 		return splashScene;
 	}
 
+	/**
+	 * 
+	 */
 	public void loadMenuResources() {
 		// TODO Auto-generated method stub
 		//List of things to load
@@ -50,6 +61,9 @@ public class CoffeeSimScene {
 		//start
 	}
 
+	/**
+	 * @return The newly created Menu Scene
+	 */
 	public Scene createMenuScene() {
 		// TODO Auto-generated method stub
 		menuScene = new Scene();
@@ -79,6 +93,9 @@ public class CoffeeSimScene {
 		
 	}
 	
+	/**
+	 * 
+	 */
 	public void loadGameResources() {
 		// TODO Auto-generated method stub
 		//background (already loaded)
@@ -95,6 +112,9 @@ public class CoffeeSimScene {
 		
 	}
 
+	/**
+	 * @return The newly created Game Scene
+	 */
 	public Scene createGameScene() {
 		// TODO Auto-generated method stub
 		gameScene = new Scene();
@@ -105,6 +125,9 @@ public class CoffeeSimScene {
 		
 	}
 
+	/**
+	 * @param scene The scene of the resources you would like to load
+	 */
 	public void loadSceneResources(AllScenes scene) {
 		// TODO Auto-generated method stub
 		switch (scene) {
@@ -122,6 +145,10 @@ public class CoffeeSimScene {
 		}
 	}
 
+	/**
+	 * @param scene The Scene you would like to create
+	 * @return The Scene you created
+	 */
 	public Scene createScene(AllScenes scene) {
 		// TODO Auto-generated method stub
 		
@@ -137,6 +164,9 @@ public class CoffeeSimScene {
 		}
 	}
 	
+	/**
+	 * @param cur the scene you would like to set as the current scene
+	 */
 	public void setCurrentScene(AllScenes cur) {
 
 		switch (cur) {

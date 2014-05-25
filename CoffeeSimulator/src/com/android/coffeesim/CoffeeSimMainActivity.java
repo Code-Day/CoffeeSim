@@ -19,6 +19,10 @@ import com.android.coffeesim.scene.SceneManager;
 
 
 
+/**
+ * Main Activity
+ *
+ */
 public class CoffeeSimMainActivity extends BaseGameActivity {
 
 	//Main Camera
@@ -60,13 +64,15 @@ public class CoffeeSimMainActivity extends BaseGameActivity {
 	public void onCreateResources(
 			OnCreateResourcesCallback pOnCreateResourcesCallback)
 			throws Exception {
-		// TODO Auto-generated method stub
+		// TODO
 		
+		//make the managers
 		sceneManager = new SceneManager(this, mEngine);
 //		resourceManager = new ResourceManager();
 //		gameManager = new GameManager();
 //		physicsManager = new PhysicsManager();
 		
+		//load splash resources
 		sceneManager.loadSceneResources(AllScenes.SPLASH);
 
 		pOnCreateResourcesCallback.onCreateResourcesFinished();
@@ -77,6 +83,7 @@ public class CoffeeSimMainActivity extends BaseGameActivity {
 			throws Exception {
 		// TODO Auto-generated method stub
 		
+		//returns the splash scene
 		pOnCreateSceneCallback.onCreateSceneFinished(sceneManager
 				.createScene(AllScenes.SPLASH));
 		
@@ -87,6 +94,7 @@ public class CoffeeSimMainActivity extends BaseGameActivity {
 			OnPopulateSceneCallback pOnPopulateSceneCallback) throws Exception {
 		// TODO Auto-generated method stub
 		
+		//Loads all other resources and creates their scenes then shows the menu scene
 //		sceneManager.loadSceneResources(AllScenes.MENU);
 //		sceneManager.loadSceneResources(AllScenes.GAME);
 //		sceneManager.createScene(AllScenes.MENU);
