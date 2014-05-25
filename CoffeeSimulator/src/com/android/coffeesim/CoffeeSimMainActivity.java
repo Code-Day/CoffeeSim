@@ -14,6 +14,7 @@ import org.andengine.ui.activity.BaseGameActivity;
 import android.util.DisplayMetrics;
 import android.view.Display;
 
+import com.android.coffeesim.resourcemanager.ResourceManager;
 import com.android.coffeesim.scene.CoffeeSimScene.AllScenes;
 import com.android.coffeesim.scene.SceneManager;
 
@@ -34,7 +35,7 @@ public class CoffeeSimMainActivity extends BaseGameActivity {
 	
 	//Every manager
 	private SceneManager sceneManager;
-//	private ResourceManager resourceManager;
+	private ResourceManager resourceManager;
 //	private GameManager gameManager;
 //	private PhysicsManager physicsManager;
 	
@@ -67,13 +68,13 @@ public class CoffeeSimMainActivity extends BaseGameActivity {
 		// TODO
 		
 		//make the managers
-		sceneManager = new SceneManager(this, mEngine);
-//		resourceManager = new ResourceManager();
+		sceneManager = new SceneManager(this, mEngine, resourceManager);
+		resourceManager = new ResourceManager(mEngine, this);
 //		gameManager = new GameManager();
 //		physicsManager = new PhysicsManager();
 		
 		//load splash resources
-		sceneManager.loadSceneResources(AllScenes.SPLASH);
+		resourceManager.onCreateSplashResources();
 
 		pOnCreateResourcesCallback.onCreateResourcesFinished();
 	}

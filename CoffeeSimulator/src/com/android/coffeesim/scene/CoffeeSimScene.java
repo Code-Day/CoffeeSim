@@ -3,13 +3,16 @@ package com.android.coffeesim.scene;
 import org.andengine.engine.Engine;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
+import org.andengine.entity.sprite.Sprite;
 
 import com.android.coffeesim.CoffeeSimMainActivity;
+import com.android.coffeesim.resourcemanager.ResourceManager;
 
 public class CoffeeSimScene {
 	
 	private CoffeeSimMainActivity activity;
 	private Engine engine;
+	private ResourceManager resourceManager;
 	private Scene splashScene;
 	private Scene menuScene;
 	private Scene gameScene;
@@ -22,10 +25,11 @@ public class CoffeeSimScene {
 	 * @param act - Main Activity
 	 * @param eng - The Engine
 	 */
-	public CoffeeSimScene(CoffeeSimMainActivity act, Engine eng) {
+	public CoffeeSimScene(CoffeeSimMainActivity act, Engine eng, ResourceManager r) {
 		// TODO ADD RESOURCE MANAGER, PHYSICS MANAGER
 		activity = act;
 		engine = eng;
+		resourceManager = r;
 	}
 	
 	/**
@@ -46,7 +50,7 @@ public class CoffeeSimScene {
 		splashScene = new Scene();
 		splashScene.setBackground(new Background(12, 0, 100));
 		//TODO
-		//Sprite loading = resourceManager.getSprite("loading", (engine.getCamera().getCenterX()/2) - (resourceManager.getTR("loading").getWidth()/2), (engine.getCamera().getCenterY()/2) - (resourceManager.getTR("loading").getHeight()/2));
+		Sprite loading = resourceManager.makeDatSprite("loading", (engine.getCamera().getCenterX()/2) - (resourceManager.getDatTextureRegion("loading").getWidth()/2), (engine.getCamera().getCenterY()/2) - (resourceManager.getDatTextureRegion("loading").getHeight()/2));
 		//splashScene.attachChild(loading);
 		return splashScene;
 	}
