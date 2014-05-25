@@ -21,6 +21,7 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import android.util.SparseArray;
 
 import com.android.coffeesim.resourcemanager.ResourceManager;
+import com.android.coffeesim.scene.SceneManager;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -43,6 +44,7 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 	private final short FILTER_MASK = PhysicsManager.COFF_CAT + PhysicsManager.ENV_CAT;
 	private final short ENV_MASK = PhysicsManager.COFF_CAT + PhysicsManager.ENV_CAT + PhysicsManager.DROP_CAT;
 	
+	private SceneManager mSceneManager;
 	private ResourceManager mResourceManager;
 	private VertexBufferObjectManager mVertexBufferObjectManager;
 	private PhysicsWorld mPhysWorld;
@@ -74,7 +76,7 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 	private float halfThickness;
 	
 	
-	public PhysicsManager ( Engine pEngine, ResourceManager pResMgr )
+	public PhysicsManager ( Engine pEngine, SceneManager pSceneManager, ResourceManager pResMgr )
 	{
 		mBodies = new ArrayList < Body > ();
 		mJoints = new ArrayList < Joint > ();
@@ -87,6 +89,7 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 		
 		mVertexBufferObjectManager = pEngine.getVertexBufferObjectManager ();
 	
+		mSceneManager = pSceneManager;
 		mEngine = pEngine;
 		mResourceManager = pResMgr;
 		
@@ -108,7 +111,7 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 		halfThickness = bodyThickness / 2;
 		
 		
-		mEngine.getScene ().registerUpdateHandler ( mPhysWorld );
+		mSceneManager.getCurScene ().registerUpdateHandler ( mPhysWorld );
 	}
 	
 	private void createFixtureDefs ()
@@ -129,8 +132,8 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 	{
 		this.destroyAllThings ();
 		
-		createCoffeePot ();
 		createCoffeePress ();
+		createCoffeePot ();
 	}
 	
 	private void destroyAllThings ()
@@ -180,11 +183,11 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 		coffeePotSprite.setSize ( sideLen, sideLen );
 		
 		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( coffeePotSprite, groundBody, false, false ) );
-		mEngine.getScene ().attachChild ( coffeePotSprite );
+		mSceneManager.getCurScene ().attachChild ( coffeePotSprite );
 		
-		mEngine.getScene ().attachChild ( ground );
-		mEngine.getScene ().attachChild ( left );
-		mEngine.getScene ().attachChild ( right );
+		mSceneManager.getCurScene ().attachChild ( ground );
+		mSceneManager.getCurScene ().attachChild ( left );
+		mSceneManager.getCurScene ().attachChild ( right );
 	}
 	
 	private void createCoffeePress ()
@@ -214,13 +217,14 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( handleTop, handleTopBody, true, false ) );
 		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( handleBar, handleBarBody, true, false ) );
 		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( filter, filterBody, true, false ) );
-		mEngine.getScene ().attachChild ( handleTop );
-		mEngine.getScene ().attachChild ( handleBar );
-		mEngine.getScene ().attachChild ( filter );
+		mSceneManager.getCurScene ().attachChild ( handleTop );
+		mSceneManager.getCurScene ().attachChild ( handleBar );
+		mSceneManager.getCurScene ().attachChild ( filter );
 	}
 	
 	private void createWaterDrop ( float x, float y )
 	{	
+		Sprite droplet = mResourceManager.makeDatSprite ( WaterDrop.ASSET_NAME, x, y );
 		Body dropletBody = PhysicsFactory.createCircleBody ( this.mPhysWorld, x, y, WaterDrop.RADIUS, BodyType.DynamicBody, WaterDrop.DROPLET_FIX );
 		mBodies.add ( dropletBody );
 		mWaterDrops.add ( new WaterDrop ( x, y, 0.0f, .61f, 1.0f ) );
@@ -230,9 +234,9 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 			mPhysWorld.destroyBody ( mBodies.remove ( 0 ) );
 			mWaterDrops.remove ( 0 );
 		}
-		//mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( droplet, dropletBody, true, false ) );
+		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( droplet, dropletBody, true, false ) );
 		
-		//mSceneManager.getCurrentScene ().attachChild ( droplet );
+		mSceneManager.getCurScene ().attachChild ( droplet );
 	}
 	
 	private void createCoffeegrain ( float x, float y )
@@ -244,7 +248,7 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 		mCoffeeGrains.add ( new CoffeeGrain () );
 		
 		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( coffeegrain, coffeeGrainBody, true, true ) );
-		mEngine.getScene ().attachChild ( coffeegrain );
+		mSceneManager.getCurScene ().attachChild ( coffeegrain );
 	}
 	
 	@ Override
