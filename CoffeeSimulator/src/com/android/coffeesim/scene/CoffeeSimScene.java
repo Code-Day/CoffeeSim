@@ -4,6 +4,7 @@ import org.andengine.engine.Engine;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.sprite.ButtonSprite;
+import org.andengine.entity.sprite.ButtonSprite.OnClickListener;
 import org.andengine.entity.sprite.Sprite;
 
 import com.android.coffeesim.CoffeeSimMainActivity;
@@ -106,25 +107,26 @@ public class CoffeeSimScene {
 						- (resourceManager.getDatTextureRegion("button_start")
 								.getWidth() / 2), (engine.getCamera()
 						.getCenterY() / 2)
-						- (resourceManager.getDatTextureRegion("start")
+						- (resourceManager.getDatTextureRegion("button_start")
 								.getHeight() / 2));
-		//
-
-		// start.setOnClickListener(new OnClickListener(){
-		//
-		// @Override
-		// public void onClick(ButtonSprite pButtonSprite,
-		// float pTouchAreaLocalX, float pTouchAreaLocalY) {
-		// // TODO Auto-generated method stub
-		// setCurrentScene(AllScenes.GAME);
-		// }
-		//
-		// });
+		
+		 start.setOnClickListener(new OnClickListener(){
+		
+		 @Override
+		 public void onClick(ButtonSprite pButtonSprite,
+		 float pTouchAreaLocalX, float pTouchAreaLocalY) {
+		 // TODO Auto-generated method stub
+			 setCurrentScene(AllScenes.GAME);
+		 }
+		
+		 });
+		
 		background.setSize(engine.getCamera().getWidth(), engine.getCamera()
 				.getHeight());
 		menuScene.attachChild(background);
 		// menuScene.attachChild(frenchPress);
-		// menuScene.attachChild(start);
+		menuScene.registerTouchArea(start);
+		menuScene.attachChild(start);
 
 		return menuScene;
 
