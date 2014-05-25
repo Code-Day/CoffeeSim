@@ -58,6 +58,22 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 	private FixtureDef filterFix;
 	private FixtureDef wallFix;
 	
+	private float cX;
+	private float cY;
+	private float W910;
+	private float W10;
+	private float H10;
+	private float H5;
+	private float H310;
+	private float H610;
+	private float H910;
+	
+	private float sideLen;
+	private float halfSideLen;
+	private float bodyThickness;
+	private float halfThickness;
+	
+	
 	public PhysicsManager ( Engine pEngine, ResourceManager pResMgr )
 	{
 		mBodies = new ArrayList < Body > ();
@@ -75,6 +91,22 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 		mResourceManager = pResMgr;
 		
 		createFixtureDefs ();
+		
+		cX = mEngine.getCamera ().getCenterX ();
+		cY = mEngine.getCamera ().getHeight () - ( mEngine.getCamera ().getHeight () * .2f );
+		W910 = ( mEngine.getCamera ().getWidth () / 10 ) * 9;
+		W10 = mEngine.getCamera ().getWidth () / 10;
+		H10 = mEngine.getCamera ().getHeight () / 10;
+		H5 = mEngine.getCamera ().getHeight () / 5;
+		H310 = ( mEngine.getCamera ().getHeight () / 10 ) * 3;
+		H610 = ( mEngine.getCamera ().getHeight () / 10 ) * 6;
+		H910 = ( mEngine.getCamera ().getHeight () / 10 ) * 9;
+		
+		sideLen = ( mEngine.getCamera ().getWidth () * .34f );
+		halfSideLen = ( mEngine.getCamera ().getWidth () * .34f ) / 2;
+		bodyThickness = 3;
+		halfThickness = bodyThickness / 2;
+		
 		
 		mEngine.getScene ().registerUpdateHandler ( mPhysWorld );
 	}
@@ -120,23 +152,8 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 		mJoints.clear ();
 	}
 	
-	final float cX = mEngine.getCamera ().getCenterX ();
-	final float cY = mEngine.getCamera ().getHeight () - ( mEngine.getCamera ().getHeight () * .2f );
-	final float W910 = ( mEngine.getCamera ().getWidth () / 10 ) * 9;
-	final float W10 = mEngine.getCamera ().getWidth () / 10;
-	final float H10 = mEngine.getCamera ().getHeight () / 10;
-	final float H5 = mEngine.getCamera ().getHeight () / 5;
-	final float H310 = ( mEngine.getCamera ().getHeight () / 10 ) * 3;
-	final float H610 = ( mEngine.getCamera ().getHeight () / 10 ) * 6;
-	final float H910 = ( mEngine.getCamera ().getHeight () / 10 ) * 9;
-	
-	final float sideLen = ( mEngine.getCamera ().getWidth () * .34f );
-	final float halfSideLen = ( mEngine.getCamera ().getWidth () * .34f ) / 2;
-	final float bodyThickness = 3;
-	final float halfThickness = bodyThickness / 2;
-	
 	private void createCoffeePot ()
-	{		
+	{			
 		Rectangle ground = new Rectangle ( cX, H910, sideLen, bodyThickness, this.mVertexBufferObjectManager );
 		ground.setColor ( 0, 0, 1f );
 		Rectangle left = new Rectangle ( W10 - halfThickness, H610 - halfSideLen, bodyThickness, sideLen, this.mVertexBufferObjectManager );
