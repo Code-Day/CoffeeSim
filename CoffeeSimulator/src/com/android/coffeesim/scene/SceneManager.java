@@ -4,6 +4,7 @@ import org.andengine.engine.Engine;
 import org.andengine.entity.scene.Scene;
 
 import com.android.coffeesim.CoffeeSimMainActivity;
+import com.android.coffeesim.resourcemanager.ResourceManager;
 import com.android.coffeesim.scene.CoffeeSimScene.AllScenes;
 
 public class SceneManager {
@@ -15,8 +16,8 @@ public class SceneManager {
 	 * @param act - the main activity
 	 * @param eng - the engine
 	 */
-	public SceneManager(CoffeeSimMainActivity act, Engine eng) {
-		coffeeSimScene = new CoffeeSimScene(act, eng);
+	public SceneManager(CoffeeSimMainActivity act, Engine eng, ResourceManager r) {
+		coffeeSimScene = new CoffeeSimScene(act, eng, r);
 	}
 
 	
