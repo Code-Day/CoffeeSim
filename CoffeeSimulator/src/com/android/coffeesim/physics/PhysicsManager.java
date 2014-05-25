@@ -132,8 +132,8 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 	{
 		this.destroyAllThings ();
 		
-		createCoffeePot ();
 		createCoffeePress ();
+		createCoffeePot ();
 	}
 	
 	private void destroyAllThings ()
