@@ -162,7 +162,7 @@ public class ResourceManager {
 	// 1. check hashmap to see if we have texture
 	// 2. if we have texture, create sprite and return
 	// ===========================================================
-	public Sprite makeDatButtonSprite(String theTexture, Float w, Float h) {
+	public ButtonSprite makeDatButtonSprite(String theTexture, Float w, Float h) {
 		// check dat hashmap
 		if (images.containsKey(theTexture)) {
 			// create dat sprite
