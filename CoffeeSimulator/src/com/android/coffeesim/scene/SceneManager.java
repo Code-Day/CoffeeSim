@@ -4,6 +4,7 @@ import org.andengine.engine.Engine;
 import org.andengine.entity.scene.Scene;
 
 import com.android.coffeesim.CoffeeSimMainActivity;
+import com.android.coffeesim.physics.PhysicsManager;
 import com.android.coffeesim.resourcemanager.ResourceManager;
 import com.android.coffeesim.scene.CoffeeSimScene.AllScenes;
 
@@ -34,10 +35,10 @@ public class SceneManager {
 	 * @param  - the scene you would like to load
 	 * @return - the Scene you loaded
 	 */
-	public Scene createScene(AllScenes scene) {
+	public Scene createScene(AllScenes scene, PhysicsManager p) {
 		// TODO Auto-generated method stub
 		
-		return coffeeSimScene.createScene(scene);
+		return coffeeSimScene.createScene(scene, p);
 	}
 	
 	/**
@@ -48,9 +49,9 @@ public class SceneManager {
 		coffeeSimScene.setCurrentScene(cur);
 	}
 	
-	public Scene getCurScene(){
+	public Scene getGameScene(){
 		
-		return coffeeSimScene.getCurScene();
+		return coffeeSimScene.getGameScene();
 	}
 
 }

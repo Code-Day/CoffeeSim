@@ -8,6 +8,7 @@ import org.andengine.entity.sprite.ButtonSprite.OnClickListener;
 import org.andengine.entity.sprite.Sprite;
 
 import com.android.coffeesim.CoffeeSimMainActivity;
+import com.android.coffeesim.physics.PhysicsManager;
 import com.android.coffeesim.resourcemanager.ResourceManager;
 
 public class CoffeeSimScene {
@@ -15,6 +16,7 @@ public class CoffeeSimScene {
 	private CoffeeSimMainActivity activity;
 	private Engine engine;
 	private ResourceManager resourceManager;
+	private PhysicsManager physicsManager;
 	private Scene splashScene;
 	private Scene menuScene;
 	private Scene gameScene;
@@ -103,10 +105,10 @@ public class CoffeeSimScene {
 //						- resourceManager.getDatTextureRegion("frenchpress")
 //								.getHeight() - 5);
 		ButtonSprite start = resourceManager.makeDatButtonSprite("button_start",
-				(engine.getCamera().getCenterX() / 2)
+				(engine.getCamera().getCenterX())
 						- (resourceManager.getDatTextureRegion("button_start")
 								.getWidth() / 2), (engine.getCamera()
-						.getCenterY() / 2)
+						.getCenterY())
 						- (resourceManager.getDatTextureRegion("button_start")
 								.getHeight() / 2));
 		
@@ -116,6 +118,7 @@ public class CoffeeSimScene {
 		 public void onClick(ButtonSprite pButtonSprite,
 		 float pTouchAreaLocalX, float pTouchAreaLocalY) {
 		 // TODO Auto-generated method stub
+//			 createScene(AllScenes.GAME, physicsManager);
 			 setCurrentScene(AllScenes.GAME);
 		 }
 		
@@ -154,12 +157,18 @@ public class CoffeeSimScene {
 	/**
 	 * @return The newly created Game Scene
 	 */
-	public Scene createGameScene() {
+	public Scene createGameScene(PhysicsManager p) {
 		// TODO Auto-generated method stub
+		physicsManager = p;
 		gameScene = new Scene();
 		gameScene.setBackground(new Background(0, 100, 12));
-
-		// physicsManager.initializePhysicsManager();
+		Sprite background = resourceManager.makeDatSprite("background", 0.0f,
+				0.0f);
+		background.setSize(engine.getCamera().getWidth(), engine.getCamera()
+				.getHeight());
+		gameScene.attachChild(background);
+		
+		physicsManager.initializeGameScene();
 		return gameScene;
 
 	}
@@ -190,7 +199,7 @@ public class CoffeeSimScene {
 	 *            The Scene you would like to create
 	 * @return The Scene you created
 	 */
-	public Scene createScene(AllScenes scene) {
+	public Scene createScene(AllScenes scene, PhysicsManager p) {
 		// TODO Auto-generated method stub
 
 		switch (scene) {
@@ -199,7 +208,7 @@ public class CoffeeSimScene {
 		case MENU:
 			return this.createMenuScene();
 		case GAME:
-			return this.createGameScene();
+			return this.createGameScene(p);
 		default:
 			return null;
 		}
@@ -229,8 +238,8 @@ public class CoffeeSimScene {
 		}
 	}
 
-	public Scene getCurScene() {
-		return curScene;
+	public Scene getGameScene() {
+		return gameScene;
 	}
 
 }
