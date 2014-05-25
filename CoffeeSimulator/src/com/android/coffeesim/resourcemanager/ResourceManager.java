@@ -110,18 +110,30 @@ public class ResourceManager {
 	}
 	
 	// ===========================================================
-	// This function grabs a single image to load before game starts
+	// 1. check hashmap to see if we have texture
+	// 2. if we have texture, create sprite and return
 	// ===========================================================
-	// TODO: add floats
 	public Sprite makeDatSprite(String theTexture, Float w, Float h) {
 		// check dat hashmap
 		if (images.containsKey(theTexture)) {
 			// create dat sprite
-			// TODO: understand pVertexBufferObject (our engine should be passed in)
 			Sprite sPlayer = new Sprite(w, h, images.get(theTexture), engine.getVertexBufferObjectManager());
 			// TEST
 			//sPlayer.setRotation(45.0f);
 			return sPlayer;
+		}
+		return null;
+	}
+	
+	// ===========================================================
+	// 1. check hashmap to see if we have texture
+	// 2. if we have texture, return the texture region
+	// ===========================================================
+	public ITextureRegion getDatTextureRegion(String theTexture) {
+		// check dat hashmap
+		if (images.containsKey(theTexture)) {
+			// return dat Texture Region
+			return images.get(theTexture);
 		}
 		return null;
 	}
