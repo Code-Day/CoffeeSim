@@ -111,7 +111,7 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 		halfThickness = bodyThickness / 2;
 		
 		
-		mSceneManager.getCurScene ().registerUpdateHandler ( mPhysWorld );
+		
 	}
 	
 	private void createFixtureDefs ()
@@ -134,6 +134,8 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 		
 		createCoffeePress ();
 		createCoffeePot ();
+		
+		mSceneManager.getGameScene ().registerUpdateHandler ( mPhysWorld );
 	}
 	
 	private void destroyAllThings ()
@@ -179,15 +181,15 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 				(W910)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT,
 				(H910)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT );
 		
-		Sprite coffeePotSprite = mResourceManager.makeDatSprite ( "coffeepot", W10 - halfThickness, H610 - halfSideLen );
-		coffeePotSprite.setSize ( sideLen, sideLen );
+//		Sprite coffeePotSprite = mResourceManager.makeDatSprite ( "coffeepot", W10 - halfThickness, H610 - halfSideLen );
+//		coffeePotSprite.setSize ( sideLen, sideLen );
+//		
+//		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( coffeePotSprite, groundBody, false, false ) );
+//		mSceneManager.getGameScene ().attachChild ( coffeePotSprite );
 		
-		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( coffeePotSprite, groundBody, false, false ) );
-		mSceneManager.getCurScene ().attachChild ( coffeePotSprite );
-		
-		mSceneManager.getCurScene ().attachChild ( ground );
-		mSceneManager.getCurScene ().attachChild ( left );
-		mSceneManager.getCurScene ().attachChild ( right );
+		mSceneManager.getGameScene ().attachChild ( ground );
+		mSceneManager.getGameScene ().attachChild ( left );
+		mSceneManager.getGameScene ().attachChild ( right );
 	}
 	
 	private void createCoffeePress ()
@@ -217,9 +219,9 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( handleTop, handleTopBody, true, false ) );
 		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( handleBar, handleBarBody, true, false ) );
 		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( filter, filterBody, true, false ) );
-		mSceneManager.getCurScene ().attachChild ( handleTop );
-		mSceneManager.getCurScene ().attachChild ( handleBar );
-		mSceneManager.getCurScene ().attachChild ( filter );
+		mSceneManager.getGameScene ().attachChild ( handleTop );
+		mSceneManager.getGameScene ().attachChild ( handleBar );
+		mSceneManager.getGameScene ().attachChild ( filter );
 	}
 	
 	private void createWaterDrop ( float x, float y )
@@ -236,7 +238,7 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 		}
 		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( droplet, dropletBody, true, false ) );
 		
-		mSceneManager.getCurScene ().attachChild ( droplet );
+		mSceneManager.getGameScene ().attachChild ( droplet );
 	}
 	
 	private void createCoffeegrain ( float x, float y )
@@ -248,7 +250,7 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 		mCoffeeGrains.add ( new CoffeeGrain () );
 		
 		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( coffeegrain, coffeeGrainBody, true, true ) );
-		mSceneManager.getCurScene ().attachChild ( coffeegrain );
+		mSceneManager.getGameScene ().attachChild ( coffeegrain );
 	}
 	
 	@ Override
