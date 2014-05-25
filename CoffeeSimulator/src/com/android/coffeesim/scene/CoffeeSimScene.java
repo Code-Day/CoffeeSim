@@ -8,6 +8,7 @@ import org.andengine.entity.sprite.ButtonSprite.OnClickListener;
 import org.andengine.entity.sprite.Sprite;
 
 import com.android.coffeesim.CoffeeSimMainActivity;
+import com.android.coffeesim.game.GameManager;
 import com.android.coffeesim.physics.PhysicsManager;
 import com.android.coffeesim.resourcemanager.ResourceManager;
 
@@ -21,6 +22,7 @@ public class CoffeeSimScene {
 	private Scene menuScene;
 	private Scene gameScene;
 	private Scene curScene;
+	private GameManager gameManager;
 
 	public enum AllScenes {
 		SPLASH, MENU, GAME
@@ -88,22 +90,7 @@ public class CoffeeSimScene {
 		menuScene.setBackground(new Background(100, 12, 0)); // will be gone
 		Sprite background = resourceManager.makeDatSprite("background", 0.0f,
 				0.0f);
-//		Sprite lid = resourceManager.makeDatSprite("button_lid", (engine.getCamera()
-//				.getCenterX() / 2)
-//				- (resourceManager.getDatTextureRegion("button_lid").getWidth() / 2),
-//				engine.getCamera().getCenterY()
-//						- resourceManager.getDatTextureRegion("frenchpress")
-//								.getHeight()
-//						- 5
-//						- resourceManager.getDatTextureRegion("lid")
-//								.getHeight());
-//		Sprite frenchPress = resourceManager.makeDatSprite("frenchpress",
-//				(engine.getCamera().getCenterX() / 2)
-//						- (resourceManager.getDatTextureRegion("frenchpress")
-//								.getWidth() / 2),
-//				engine.getCamera().getCenterY()
-//						- resourceManager.getDatTextureRegion("frenchpress")
-//								.getHeight() - 5);
+		
 		ButtonSprite start = resourceManager.makeDatButtonSprite("button_start",
 				(engine.getCamera().getCenterX())
 						- (resourceManager.getDatTextureRegion("button_start")
@@ -127,7 +114,6 @@ public class CoffeeSimScene {
 		background.setSize(engine.getCamera().getWidth(), engine.getCamera()
 				.getHeight());
 		menuScene.attachChild(background);
-		// menuScene.attachChild(frenchPress);
 		menuScene.registerTouchArea(start);
 		menuScene.attachChild(start);
 
@@ -157,8 +143,9 @@ public class CoffeeSimScene {
 	/**
 	 * @return The newly created Game Scene
 	 */
-	public Scene createGameScene(PhysicsManager p) {
+	public Scene createGameScene(PhysicsManager p, GameManager g) {
 		// TODO Auto-generated method stub
+		gameManager = g;
 		physicsManager = p;
 		gameScene = new Scene();
 		gameScene.setBackground(new Background(0, 100, 12));
@@ -169,6 +156,7 @@ public class CoffeeSimScene {
 		gameScene.attachChild(background);
 		
 		physicsManager.initializeGameScene();
+		gameManager.initialize(gameScene);
 		return gameScene;
 
 	}
@@ -199,7 +187,7 @@ public class CoffeeSimScene {
 	 *            The Scene you would like to create
 	 * @return The Scene you created
 	 */
-	public Scene createScene(AllScenes scene, PhysicsManager p) {
+	public Scene createScene(AllScenes scene, PhysicsManager p, GameManager g) {
 		// TODO Auto-generated method stub
 
 		switch (scene) {
@@ -208,7 +196,7 @@ public class CoffeeSimScene {
 		case MENU:
 			return this.createMenuScene();
 		case GAME:
-			return this.createGameScene(p);
+			return this.createGameScene(p, g);
 		default:
 			return null;
 		}
