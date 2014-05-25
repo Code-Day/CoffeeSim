@@ -51,7 +51,7 @@ public class CoffeeSimScene {
 		splashScene.setBackground(new Background(12, 0, 100));
 		//TODO
 		Sprite loading = resourceManager.makeDatSprite("loading", (engine.getCamera().getCenterX()/2) - (resourceManager.getDatTextureRegion("loading").getWidth()/2), (engine.getCamera().getCenterY()/2) - (resourceManager.getDatTextureRegion("loading").getHeight()/2));
-		//splashScene.attachChild(loading);
+		splashScene.attachChild(loading);
 		return splashScene;
 	}
 
