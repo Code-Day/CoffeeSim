@@ -16,6 +16,7 @@ public class CoffeeSimScene {
 	private Scene splashScene;
 	private Scene menuScene;
 	private Scene gameScene;
+	private Scene curScene;
 
 	public enum AllScenes {
 		SPLASH, MENU, GAME
@@ -197,20 +198,27 @@ public class CoffeeSimScene {
 	 *            the scene you would like to set as the current scene
 	 */
 	public void setCurrentScene(AllScenes cur) {
-
+		
 		switch (cur) {
 		case SPLASH:
+			curScene = splashScene;
 			engine.setScene(splashScene);
 			break;
 		case MENU:
+			curScene = menuScene;
 			engine.setScene(menuScene);
 			break;
 		case GAME:
+			curScene = gameScene;
 			engine.setScene(gameScene);
 			break;
 		default:
 			break;
 		}
+	}
+	
+	public Scene getCurScene(){
+		return curScene;
 	}
 
 }
