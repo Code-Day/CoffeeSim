@@ -16,6 +16,7 @@ public class CoffeeSimScene {
 	private Scene splashScene;
 	private Scene menuScene;
 	private Scene gameScene;
+	private Scene curScene;
 
 	public enum AllScenes {
 		SPLASH, MENU, GAME
@@ -35,16 +36,16 @@ public class CoffeeSimScene {
 		resourceManager = r;
 	}
 
-	/**
-	 * 
-	 */
-	public void loadSplashResources() {
-		// TODO Auto-generated method stub
-
-		// List of things to load
-		// splash image
-
-	}
+//	/**
+//	 * 
+//	 */
+//	public void loadSplashResources() {
+//		// TODO Auto-generated method stub
+//
+//		// List of things to load
+//		// splash image
+//
+//	}
 
 	/**
 	 * @return The Splash Scene
@@ -64,15 +65,15 @@ public class CoffeeSimScene {
 		return splashScene;
 	}
 
-	/**
-	 * 
-	 */
-	public void loadMenuResources() {
-		// TODO Auto-generated method stub
-		// List of things to load
-		// background
-		// start
-	}
+//	/**
+//	 * 
+//	 */
+//	public void loadMenuResources() {
+//		// TODO Auto-generated method stub
+//		// List of things to load
+//		// background
+//		// start
+//	}
 
 	/**
 	 * @return The newly created Menu Scene
@@ -151,26 +152,26 @@ public class CoffeeSimScene {
 
 	}
 
-	/**
-	 * @param scene
-	 *            The scene of the resources you would like to load
-	 */
-	public void loadSceneResources(AllScenes scene) {
-		// TODO Auto-generated method stub
-		switch (scene) {
-		case SPLASH:
-			this.loadSplashResources();
-			break;
-		case MENU:
-			this.loadMenuResources();
-			break;
-		case GAME:
-			this.loadGameResources();
-			break;
-		default:
-			break;
-		}
-	}
+//	/**
+//	 * @param scene
+//	 *            The scene of the resources you would like to load
+//	 */
+//	public void loadSceneResources(AllScenes scene) {
+//		// TODO Auto-generated method stub
+//		switch (scene) {
+//		case SPLASH:
+//			this.loadSplashResources();
+//			break;
+//		case MENU:
+//			this.loadMenuResources();
+//			break;
+//		case GAME:
+//			this.loadGameResources();
+//			break;
+//		default:
+//			break;
+//		}
+//	}
 
 	/**
 	 * @param scene
@@ -197,20 +198,27 @@ public class CoffeeSimScene {
 	 *            the scene you would like to set as the current scene
 	 */
 	public void setCurrentScene(AllScenes cur) {
-
+		
 		switch (cur) {
 		case SPLASH:
+			curScene = splashScene;
 			engine.setScene(splashScene);
 			break;
 		case MENU:
+			curScene = menuScene;
 			engine.setScene(menuScene);
 			break;
 		case GAME:
+			curScene = gameScene;
 			engine.setScene(gameScene);
 			break;
 		default:
 			break;
 		}
+	}
+	
+	public Scene getCurScene(){
+		return curScene;
 	}
 
 }

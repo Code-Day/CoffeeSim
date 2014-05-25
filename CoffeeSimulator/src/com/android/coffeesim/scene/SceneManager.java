@@ -10,7 +10,6 @@ import com.android.coffeesim.scene.CoffeeSimScene.AllScenes;
 public class SceneManager {
 
 	private CoffeeSimScene coffeeSimScene;
-
 	
 	/**
 	 * @param act - the main activity
@@ -21,14 +20,14 @@ public class SceneManager {
 	}
 
 	
-	/**
-	 * @param scene - the scene you would like to load
-	 */
-	public void loadSceneResources(AllScenes scene) {
-		// TODO Auto-generated method stub
-		
-		coffeeSimScene.loadSceneResources(scene);
-	}
+//	/**
+//	 * @param scene - the scene you would like to load
+//	 */
+//	public void loadSceneResources(AllScenes scene) {
+//		// TODO Auto-generated method stub
+//		
+//		coffeeSimScene.loadSceneResources(scene);
+//	}
 
 	
 	/**
@@ -47,6 +46,11 @@ public class SceneManager {
 	public void setCurrentScene(AllScenes cur) {
 
 		coffeeSimScene.setCurrentScene(cur);
+	}
+	
+	public Scene getCurScene(){
+		
+		return coffeeSimScene.getCurScene();
 	}
 
 }
