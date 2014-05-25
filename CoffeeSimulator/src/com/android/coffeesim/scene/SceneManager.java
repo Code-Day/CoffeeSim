@@ -20,14 +20,14 @@ public class SceneManager {
 	}
 
 	
-	/**
-	 * @param scene - the scene you would like to load
-	 */
-	public void loadSceneResources(AllScenes scene) {
-		// TODO Auto-generated method stub
-		
-		coffeeSimScene.loadSceneResources(scene);
-	}
+//	/**
+//	 * @param scene - the scene you would like to load
+//	 */
+//	public void loadSceneResources(AllScenes scene) {
+//		// TODO Auto-generated method stub
+//		
+//		coffeeSimScene.loadSceneResources(scene);
+//	}
 
 	
 	/**

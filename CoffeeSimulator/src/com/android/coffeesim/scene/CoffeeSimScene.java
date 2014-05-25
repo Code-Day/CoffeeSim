@@ -36,16 +36,16 @@ public class CoffeeSimScene {
 		resourceManager = r;
 	}
 
-	/**
-	 * 
-	 */
-	public void loadSplashResources() {
-		// TODO Auto-generated method stub
-
-		// List of things to load
-		// splash image
-
-	}
+//	/**
+//	 * 
+//	 */
+//	public void loadSplashResources() {
+//		// TODO Auto-generated method stub
+//
+//		// List of things to load
+//		// splash image
+//
+//	}
 
 	/**
 	 * @return The Splash Scene
@@ -65,15 +65,15 @@ public class CoffeeSimScene {
 		return splashScene;
 	}
 
-	/**
-	 * 
-	 */
-	public void loadMenuResources() {
-		// TODO Auto-generated method stub
-		// List of things to load
-		// background
-		// start
-	}
+//	/**
+//	 * 
+//	 */
+//	public void loadMenuResources() {
+//		// TODO Auto-generated method stub
+//		// List of things to load
+//		// background
+//		// start
+//	}
 
 	/**
 	 * @return The newly created Menu Scene
@@ -152,26 +152,26 @@ public class CoffeeSimScene {
 
 	}
 
-	/**
-	 * @param scene
-	 *            The scene of the resources you would like to load
-	 */
-	public void loadSceneResources(AllScenes scene) {
-		// TODO Auto-generated method stub
-		switch (scene) {
-		case SPLASH:
-			this.loadSplashResources();
-			break;
-		case MENU:
-			this.loadMenuResources();
-			break;
-		case GAME:
-			this.loadGameResources();
-			break;
-		default:
-			break;
-		}
-	}
+//	/**
+//	 * @param scene
+//	 *            The scene of the resources you would like to load
+//	 */
+//	public void loadSceneResources(AllScenes scene) {
+//		// TODO Auto-generated method stub
+//		switch (scene) {
+//		case SPLASH:
+//			this.loadSplashResources();
+//			break;
+//		case MENU:
+//			this.loadMenuResources();
+//			break;
+//		case GAME:
+//			this.loadGameResources();
+//			break;
+//		default:
+//			break;
+//		}
+//	}
 
 	/**
 	 * @param scene
