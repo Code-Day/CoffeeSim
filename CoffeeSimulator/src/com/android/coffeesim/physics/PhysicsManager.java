@@ -21,7 +21,6 @@ import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import android.util.SparseArray;
 
 import com.android.coffeesim.resourcemanager.ResourceManager;
-import com.android.coffeesim.scene.SceneManager;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -36,28 +35,15 @@ import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 
 public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListener
 {
-
-	@Override
-	public boolean onAreaTouched(TouchEvent pSceneTouchEvent,
-			ITouchArea pTouchArea, float pTouchAreaLocalX,
-			float pTouchAreaLocalY) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean onSceneTouchEvent(Scene pScene, TouchEvent pSceneTouchEvent) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	/*public static final short ENV_CAT = 1;
+	public static final short ENV_CAT = 1;
 	public static final short DROP_CAT = 2;
 	public static final short COFF_CAT = 4;
+	public static final short FILTER_CAT = 8;
 	
+	private final short FILTER_MASK = PhysicsManager.COFF_CAT + PhysicsManager.ENV_CAT;
 	private final short ENV_MASK = PhysicsManager.COFF_CAT + PhysicsManager.ENV_CAT + PhysicsManager.DROP_CAT;
 	
 	private ResourceManager mResourceManager;
-	private SceneManager mSceneManager;
 	private VertexBufferObjectManager mVertexBufferObjectManager;
 	private PhysicsWorld mPhysWorld;
 	private SparseArray <MouseJoint> mMiceMap;
@@ -69,15 +55,19 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 	private ArrayList < Body > mBodies;
 	private ArrayList < Joint > mJoints;
 	
+	private FixtureDef filterFix;
 	private FixtureDef wallFix;
 	
-	public PhysicsManager ( Engine pEngine, SceneManager pSceneMgr, ResourceManager pResMgr )
+	public PhysicsManager ( Engine pEngine, ResourceManager pResMgr )
 	{
 		mBodies = new ArrayList < Body > ();
 		mJoints = new ArrayList < Joint > ();
 		
 		mMiceMap = new SparseArray <MouseJoint> (4);
 		mPhysWorld = new PhysicsWorld ( new Vector2 (0.0f, 9.81f), false );
+		
+		mWaterDrops = new ArrayList < WaterDrop > ( WaterDrop.MAX_DROPS );
+		mCoffeeGrains = new ArrayList < CoffeeGrain > ();
 		
 		mVertexBufferObjectManager = pEngine.getVertexBufferObjectManager ();
 	
@@ -86,13 +76,13 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 		
 		createFixtureDefs ();
 		
-		mSceneManager = pSceneMgr;
-		mSceneManager.getCurrentScene ().registerUpdateHandler ( mPhysWorld );
+		mEngine.getScene ().registerUpdateHandler ( mPhysWorld );
 	}
 	
 	private void createFixtureDefs ()
 	{
 		wallFix = PhysicsFactory.createFixtureDef(0, 0.5f, 0.5f, false, ENV_CAT, ENV_MASK, (short)0);
+		filterFix = PhysicsFactory.createFixtureDef(0, 0.5f, 0.5f, false, FILTER_CAT, FILTER_MASK, (short)0);
 	}
 	
 	public void dispose ()
@@ -103,7 +93,6 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 	/**
 	 * Convenience method to initialize or reinitialize the main game scene
 	 */
-	/*
 	public void initializeGameScene ()
 	{
 		this.destroyAllThings ();
@@ -131,76 +120,86 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 		mJoints.clear ();
 	}
 	
+	final float cX = mEngine.getCamera ().getCenterX ();
+	final float cY = mEngine.getCamera ().getHeight () - ( mEngine.getCamera ().getHeight () * .2f );
+	final float W910 = ( mEngine.getCamera ().getWidth () / 10 ) * 9;
+	final float W10 = mEngine.getCamera ().getWidth () / 10;
+	final float H10 = mEngine.getCamera ().getHeight () / 10;
+	final float H5 = mEngine.getCamera ().getHeight () / 5;
+	final float H310 = ( mEngine.getCamera ().getHeight () / 10 ) * 3;
+	final float H610 = ( mEngine.getCamera ().getHeight () / 10 ) * 6;
+	final float H910 = ( mEngine.getCamera ().getHeight () / 10 ) * 9;
+	
+	final float sideLen = ( mEngine.getCamera ().getWidth () * .34f );
+	final float halfSideLen = ( mEngine.getCamera ().getWidth () * .34f ) / 2;
+	final float bodyThickness = 3;
+	final float halfThickness = bodyThickness / 2;
+	
 	private void createCoffeePot ()
-	{
-		final int cX = ( int ) mEngine.getCamera ().getCenterX ();
-		final int cY = ( int ) ( mEngine.getCamera ().getHeight () - (mEngine.getCamera ().getHeight () * .2) );
-		final int W = ( int ) ( mEngine.getCamera ().getWidth () * .34f );
-		final int H = 3;
-		
-		Rectangle ground = new Rectangle ( cX, cY, W, H, this.mVertexBufferObjectManager );
+	{		
+		Rectangle ground = new Rectangle ( cX, H910, sideLen, bodyThickness, this.mVertexBufferObjectManager );
 		ground.setColor ( 0, 0, 1f );
-		Rectangle left = new Rectangle ( cX, cY - W + H, H, W, this.mVertexBufferObjectManager );
+		Rectangle left = new Rectangle ( W10 - halfThickness, H610 - halfSideLen, bodyThickness, sideLen, this.mVertexBufferObjectManager );
 		left.setColor ( 0, 1f, 0 );
-		Rectangle right = new Rectangle ( cX + W, cY - W + H, H, W, this.mVertexBufferObjectManager );
+		Rectangle right = new Rectangle ( W910  - halfThickness, H610 - halfSideLen, bodyThickness, sideLen, this.mVertexBufferObjectManager );
 		right.setColor ( 1f, 0, 0 );
 		
-		Body groundBody = PhysicsFactory.createBoxBody(this.mPhysWorld, cX, cY, W, H, BodyType.StaticBody, wallFix);
-		Body leftBody = PhysicsFactory.createBoxBody(this.mPhysWorld, cX, cY - W + H, H, W, BodyType.StaticBody, wallFix);
-		Body rightBody = PhysicsFactory.createBoxBody(this.mPhysWorld, cX + W, cY - W + H, H, W, BodyType.StaticBody, wallFix);
+		Body groundBody = PhysicsFactory.createBoxBody(this.mPhysWorld, cX, H910, sideLen, bodyThickness, BodyType.StaticBody, wallFix);
+		Body leftBody = PhysicsFactory.createBoxBody(this.mPhysWorld, W10, H610, bodyThickness, sideLen, BodyType.StaticBody, wallFix);
+		Body rightBody = PhysicsFactory.createBoxBody(this.mPhysWorld, W910, H610, bodyThickness, sideLen, BodyType.StaticBody, wallFix);
 		
 		mBodies.add ( groundBody );
 		mBodies.add ( leftBody );
 		mBodies.add ( rightBody );
 		
 		this.createWeldJointBetween ( groundBody, leftBody,
-				(cX + H/2)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT,
-				(cY + H/2)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT );
+				(W10)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT,
+				(H910)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT );
 		this.createWeldJointBetween ( groundBody, rightBody, 
-				(cX - H/2 + W)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT,
-				(cY + H/2)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT );
+				(W910)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT,
+				(H910)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT );
 		
-		Sprite coffeePotSprite = mResourceManager.getSpriteByName ( "coffeepot" );
-		coffeePotSprite.setSize ( W, cY - W + H );
+		Sprite coffeePotSprite = mResourceManager.makeDatSprite ( "coffeepot", W10 - halfThickness, H610 - halfSideLen );
+		coffeePotSprite.setSize ( sideLen, sideLen );
 		
 		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( coffeePotSprite, groundBody, false, false ) );
-		mSceneManager.getCurrentScene ().attachChild ( coffeePotSprite );
+		mEngine.getScene ().attachChild ( coffeePotSprite );
 		
-		mSceneManager.getCurrentScene ().attachChild ( ground );
-		mSceneManager.getCurrentScene ().attachChild ( left );
-		mSceneManager.getCurrentScene ().attachChild ( right );
+		mEngine.getScene ().attachChild ( ground );
+		mEngine.getScene ().attachChild ( left );
+		mEngine.getScene ().attachChild ( right );
 	}
 	
 	private void createCoffeePress ()
 	{
-		final int cX = ( int ) mEngine.getCamera ().getCenterX ();
-		final int cY = ( int ) ( mEngine.getCamera ().getWidth () * .10f );
-		final int barW = ( int ) ( mEngine.getCamera ().getWidth () * .05f );
-		final int barH = ( int ) ( mEngine.getCamera ().getWidth () * .30f );
+		Rectangle handleTop = new Rectangle ( cX - 16, H10 - 16, 32, 32, this.mVertexBufferObjectManager );
+		handleTop.setColor ( 0, 0, 1f );
+		Rectangle handleBar = new Rectangle ( cX - halfThickness, H5 - halfSideLen, bodyThickness, sideLen, this.mVertexBufferObjectManager );
+		handleBar.setColor ( 0, 1f, 0 );
+		Rectangle filter = new Rectangle ( cX - halfSideLen, H310 - halfThickness, sideLen, bodyThickness, this.mVertexBufferObjectManager );
+		filter.setColor ( 1f, 0, 0 );
 		
-		Body handleTopBody = PhysicsFactory.createCircleBody(this.mPhysWorld, cX, cY, 32, BodyType.StaticBody, wallFix);
-		Body handleBarBody = PhysicsFactory.createBoxBody(this.mPhysWorld, cX - (barW / 2), cY, barW, barH, BodyType.StaticBody, wallFix);
+		Body handleTopBody = PhysicsFactory.createCircleBody ( this.mPhysWorld, cX, H10, 32, BodyType.StaticBody, wallFix );
+		Body handleBarBody = PhysicsFactory.createBoxBody ( this.mPhysWorld, cX, H5, bodyThickness, sideLen, BodyType.StaticBody, wallFix );
+		Body filterBody = PhysicsFactory.createBoxBody ( this.mPhysWorld, cX, H310, sideLen, bodyThickness, BodyType.StaticBody, filterFix );
 		
-		Body groundBody = PhysicsFactory.createBoxBody(this.mPhysWorld, cX, cY, W, H, BodyType.StaticBody, wallFix);
-		Body leftBody = PhysicsFactory.createBoxBody(this.mPhysWorld, cX, cY - W + H, H, W, BodyType.StaticBody, wallFix);
-		Body rightBody = PhysicsFactory.createBoxBody(this.mPhysWorld, cX + W, cY - W + H, H, W, BodyType.StaticBody, wallFix);
-		
-		mBodies.add ( groundBody );
-		mBodies.add ( leftBody );
-		mBodies.add ( rightBody );
+		mBodies.add ( handleTopBody );
+		mBodies.add ( handleTopBody );
+		mBodies.add ( filterBody );
 		
 		this.createWeldJointBetween ( handleTopBody, handleBarBody,
-				(cX + H/2)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT,
-				(cY + H/2)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT );
-		this.createWeldJointBetween ( groundBody, rightBody, 
-				(cX - H/2 + W)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT,
-				(cY + H/2)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT );
+				(cX)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT,
+				(H10)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT );
+		this.createWeldJointBetween ( handleBarBody, filterBody, 
+				(cX)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT,
+				(H310)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT );
 		
-		Sprite coffeePotSprite = mResourceManager.getSpriteByName ( "coffeepot" );
-		coffeePotSprite.setSize ( W, cY - W + H );
-		
-		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( coffeePotSprite, groundBody, false, false ) );
-		mSceneManager.getCurrentScene ().attachChild ( coffeePotSprite );
+		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( handleTop, handleTopBody, true, false ) );
+		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( handleBar, handleBarBody, true, false ) );
+		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( filter, filterBody, true, false ) );
+		mEngine.getScene ().attachChild ( handleTop );
+		mEngine.getScene ().attachChild ( handleBar );
+		mEngine.getScene ().attachChild ( filter );
 	}
 	
 	private void createWaterDrop ( float x, float y )
@@ -208,6 +207,12 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 		Body dropletBody = PhysicsFactory.createCircleBody ( this.mPhysWorld, x, y, WaterDrop.RADIUS, BodyType.DynamicBody, WaterDrop.DROPLET_FIX );
 		mBodies.add ( dropletBody );
 		mWaterDrops.add ( new WaterDrop ( x, y, 0.0f, .61f, 1.0f ) );
+		
+		if ( mWaterDrops.size () > WaterDrop.MAX_DROPS )
+		{
+			mPhysWorld.destroyBody ( mBodies.remove ( 0 ) );
+			mWaterDrops.remove ( 0 );
+		}
 		//mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( droplet, dropletBody, true, false ) );
 		
 		//mSceneManager.getCurrentScene ().attachChild ( droplet );
@@ -217,12 +222,12 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 	{
 		Body coffeeGrainBody = PhysicsFactory.createCircleBody ( this.mPhysWorld, x, y, 16, BodyType.DynamicBody, CoffeeGrain.COFFEE_FIX );
 		mBodies.add ( coffeeGrainBody );
-		Sprite coffeegrain = mResourceManager.getSpriteByName ( CoffeeGrain.ASSET_NAME );
+		Sprite coffeegrain = mResourceManager.makeDatSprite ( CoffeeGrain.ASSET_NAME, x, y );
 		
 		mCoffeeGrains.add ( new CoffeeGrain () );
 		
 		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( coffeegrain, coffeeGrainBody, true, true ) );
-		mSceneManager.getCurrentScene ().attachChild ( coffeegrain );
+		mEngine.getScene ().attachChild ( coffeegrain );
 	}
 	
 	@ Override
@@ -325,7 +330,4 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 		Vector2Pool.recycle ( anchorA );
 		Vector2Pool.recycle ( anchorB );
 	}
-	*/
-	
 }
-
