@@ -3,6 +3,7 @@ package com.android.coffeesim.scene;
 import org.andengine.engine.Engine;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
+import org.andengine.entity.sprite.ButtonSprite;
 import org.andengine.entity.sprite.Sprite;
 
 import com.android.coffeesim.CoffeeSimMainActivity;
@@ -36,16 +37,16 @@ public class CoffeeSimScene {
 		resourceManager = r;
 	}
 
-//	/**
-//	 * 
-//	 */
-//	public void loadSplashResources() {
-//		// TODO Auto-generated method stub
-//
-//		// List of things to load
-//		// splash image
-//
-//	}
+	// /**
+	// *
+	// */
+	// public void loadSplashResources() {
+	// // TODO Auto-generated method stub
+	//
+	// // List of things to load
+	// // splash image
+	//
+	// }
 
 	/**
 	 * @return The Splash Scene
@@ -57,23 +58,23 @@ public class CoffeeSimScene {
 		Sprite loading = resourceManager.makeDatSprite("splash",
 				(engine.getCamera().getCenterX())
 						- (resourceManager.getDatTextureRegion("splash")
-								.getWidth() / 2), (engine.getCamera()
-						.getCenterY())
+								.getWidth() / 2),
+				(engine.getCamera().getCenterY())
 						- (resourceManager.getDatTextureRegion("splash")
 								.getHeight() / 2));
 		splashScene.attachChild(loading);
 		return splashScene;
 	}
 
-//	/**
-//	 * 
-//	 */
-//	public void loadMenuResources() {
-//		// TODO Auto-generated method stub
-//		// List of things to load
-//		// background
-//		// start
-//	}
+	// /**
+	// *
+	// */
+	// public void loadMenuResources() {
+	// // TODO Auto-generated method stub
+	// // List of things to load
+	// // background
+	// // start
+	// }
 
 	/**
 	 * @return The newly created Menu Scene
@@ -82,23 +83,31 @@ public class CoffeeSimScene {
 		// TODO Auto-generated method stub
 		menuScene = new Scene();
 		menuScene.setBackground(new Background(100, 12, 0)); // will be gone
-		Sprite background = resourceManager.makeDatSprite("background", 0.0f,0.0f);
-		// Sprite lid = resourceManager.getSprite("lid",
-		// (engine.getCamera().getCenterX()/2) -
-		// (resourceManager.getTR("lid").getWidth()/2),
-		// engine.getCamera().getCenterY() -
-		// resourceManager.getTR("frenchpress").getHeight() - 5 -
-		// resourceManager.getTR("lid").getHeight());
-		// Sprite frenchPress = resourceManager.getSprite("frenchpress",
-		// (engine.getCamera().getCenterX()/2) -
-		// (resourceManager.getTR("frenchpress").getWidth()/2),
-		// engine.getCamera().getCenterY() -
-		// resourceManager.getTR("frenchpress").getHeight() - 5);
-		// ButtonSprite start = resourceManager.getButtonSprite("start",
-		// (engine.getCamera().getCenterX()/2) -
-		// (resourceManager.getTR("start").getWidth()/2),
-		// (engine.getCamera().getCenterY()/2) -
-		// (resourceManager.getTR("start").getHeight()/2));
+		Sprite background = resourceManager.makeDatSprite("background", 0.0f,
+				0.0f);
+//		Sprite lid = resourceManager.makeDatSprite("button_lid", (engine.getCamera()
+//				.getCenterX() / 2)
+//				- (resourceManager.getDatTextureRegion("button_lid").getWidth() / 2),
+//				engine.getCamera().getCenterY()
+//						- resourceManager.getDatTextureRegion("frenchpress")
+//								.getHeight()
+//						- 5
+//						- resourceManager.getDatTextureRegion("lid")
+//								.getHeight());
+//		Sprite frenchPress = resourceManager.makeDatSprite("frenchpress",
+//				(engine.getCamera().getCenterX() / 2)
+//						- (resourceManager.getDatTextureRegion("frenchpress")
+//								.getWidth() / 2),
+//				engine.getCamera().getCenterY()
+//						- resourceManager.getDatTextureRegion("frenchpress")
+//								.getHeight() - 5);
+		ButtonSprite start = resourceManager.makeDatButtonSprite("button_start",
+				(engine.getCamera().getCenterX() / 2)
+						- (resourceManager.getDatTextureRegion("button_start")
+								.getWidth() / 2), (engine.getCamera()
+						.getCenterY() / 2)
+						- (resourceManager.getDatTextureRegion("start")
+								.getHeight() / 2));
 		//
 
 		// start.setOnClickListener(new OnClickListener(){
@@ -111,7 +120,8 @@ public class CoffeeSimScene {
 		// }
 		//
 		// });
-		background.setSize(engine.getCamera().getWidth(), engine.getCamera().getHeight());
+		background.setSize(engine.getCamera().getWidth(), engine.getCamera()
+				.getHeight());
 		menuScene.attachChild(background);
 		// menuScene.attachChild(frenchPress);
 		// menuScene.attachChild(start);
@@ -152,26 +162,26 @@ public class CoffeeSimScene {
 
 	}
 
-//	/**
-//	 * @param scene
-//	 *            The scene of the resources you would like to load
-//	 */
-//	public void loadSceneResources(AllScenes scene) {
-//		// TODO Auto-generated method stub
-//		switch (scene) {
-//		case SPLASH:
-//			this.loadSplashResources();
-//			break;
-//		case MENU:
-//			this.loadMenuResources();
-//			break;
-//		case GAME:
-//			this.loadGameResources();
-//			break;
-//		default:
-//			break;
-//		}
-//	}
+	// /**
+	// * @param scene
+	// * The scene of the resources you would like to load
+	// */
+	// public void loadSceneResources(AllScenes scene) {
+	// // TODO Auto-generated method stub
+	// switch (scene) {
+	// case SPLASH:
+	// this.loadSplashResources();
+	// break;
+	// case MENU:
+	// this.loadMenuResources();
+	// break;
+	// case GAME:
+	// this.loadGameResources();
+	// break;
+	// default:
+	// break;
+	// }
+	// }
 
 	/**
 	 * @param scene
@@ -198,7 +208,7 @@ public class CoffeeSimScene {
 	 *            the scene you would like to set as the current scene
 	 */
 	public void setCurrentScene(AllScenes cur) {
-		
+
 		switch (cur) {
 		case SPLASH:
 			curScene = splashScene;
@@ -216,8 +226,8 @@ public class CoffeeSimScene {
 			break;
 		}
 	}
-	
-	public Scene getCurScene(){
+
+	public Scene getCurScene() {
 		return curScene;
 	}
 
