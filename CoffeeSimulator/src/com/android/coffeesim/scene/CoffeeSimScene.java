@@ -81,7 +81,7 @@ public class CoffeeSimScene {
 		// TODO Auto-generated method stub
 		menuScene = new Scene();
 		menuScene.setBackground(new Background(100, 12, 0)); // will be gone
-		// Sprite background = resourceManager.getSprite("background", 0,0);
+		Sprite background = resourceManager.makeDatSprite("background", 0.0f,0.0f);
 		// Sprite lid = resourceManager.getSprite("lid",
 		// (engine.getCamera().getCenterX()/2) -
 		// (resourceManager.getTR("lid").getWidth()/2),
@@ -110,8 +110,8 @@ public class CoffeeSimScene {
 		// }
 		//
 		// });
-
-		// menuScene.attachChild(background);
+		background.setSize(engine.getCamera().getWidth(), engine.getCamera().getHeight());
+		menuScene.attachChild(background);
 		// menuScene.attachChild(frenchPress);
 		// menuScene.attachChild(start);
 

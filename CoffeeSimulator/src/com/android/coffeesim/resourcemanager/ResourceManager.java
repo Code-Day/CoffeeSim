@@ -82,15 +82,15 @@ public class ResourceManager {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 		
 		// set playerTexture (note: width and hight must be set to power of x^2)
-		playerTexture = new BitmapTextureAtlas(engine.getTextureManager(), 64, 64);
+		playerTexture = new BitmapTextureAtlas(engine.getTextureManager(), 1080, 1920);
 		// grab the image and put it in a region (0,0 stands for top left corner of the atlas and gets the texture region)
-		playerTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(playerTexture, activity,"face_box.png",0,0);
+		playerTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(playerTexture, activity,"GameBackground.png",0,0);
 		
 		// load all the textures (can unload: playerTexture.unload();)
 		playerTexture.load();
 		
 		// add all the textures to the hashmap
-		images.put("face_box", playerTextureRegion);
+		images.put("background", playerTextureRegion);
 
 //		// ADVNACED METHOD FOR SPRITES... LATER
 //		this.mBitmapTextureAtlas = new BuildableBitmapTextureAtlas(this.getTextureManager(), 512, 256, TextureOptions.NEAREST);

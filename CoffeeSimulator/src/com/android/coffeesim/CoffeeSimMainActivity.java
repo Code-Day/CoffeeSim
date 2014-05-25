@@ -14,6 +14,8 @@ import org.andengine.ui.activity.BaseGameActivity;
 import android.util.DisplayMetrics;
 import android.view.Display;
 
+import com.android.coffeesim.game.GameManager;
+import com.android.coffeesim.physics.PhysicsManager;
 import com.android.coffeesim.resourcemanager.ResourceManager;
 import com.android.coffeesim.scene.CoffeeSimScene.AllScenes;
 import com.android.coffeesim.scene.SceneManager;
@@ -36,8 +38,8 @@ public class CoffeeSimMainActivity extends BaseGameActivity {
 	//Every manager
 	private SceneManager sceneManager;
 	private ResourceManager resourceManager;
-//	private GameManager gameManager;
-//	private PhysicsManager physicsManager;
+	private GameManager gameManager;
+	private PhysicsManager physicsManager;
 	
 	@Override
 	public EngineOptions onCreateEngineOptions() {
@@ -69,10 +71,10 @@ public class CoffeeSimMainActivity extends BaseGameActivity {
 		
 		//make the managers
 		resourceManager = new ResourceManager(mEngine, this);
+		gameManager = new GameManager(this, mEngine, resourceManager, physicsManager);		
+		physicsManager = new PhysicsManager();
 		sceneManager = new SceneManager(this, mEngine, resourceManager);
-		
-//		gameManager = new GameManager();
-//		physicsManager = new PhysicsManager();
+
 		
 		//load splash resources
 		resourceManager.onCreateSplashResources();
@@ -110,11 +112,10 @@ public class CoffeeSimMainActivity extends BaseGameActivity {
 					public void onTimePassed(TimerHandler pTimerHandler) {
 						// TODO Auto-generated method stub
 						mEngine.unregisterUpdateHandler(pTimerHandler);
-						sceneManager.loadSceneResources(AllScenes.MENU);
-						sceneManager.loadSceneResources(AllScenes.GAME);
+						resourceManager.onCreateResources();
 						sceneManager.createScene(AllScenes.MENU);
 						sceneManager.createScene(AllScenes.GAME);
-						sceneManager.setCurrentScene(AllScenes.GAME);
+						sceneManager.setCurrentScene(AllScenes.MENU);
 					}
 				}));
 		
