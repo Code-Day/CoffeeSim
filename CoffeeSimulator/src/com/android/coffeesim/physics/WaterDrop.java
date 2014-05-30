@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 
 public class WaterDrop
 {
+	public static final String ASSET_NAME = "droplet";
 	public static final int MAX_DROPS = 100;
 	private static final short DROP_MASK = PhysicsManager.ENV_CAT + PhysicsManager.DROP_CAT;
 	public static final FixtureDef DROPLET_FIX = PhysicsFactory.createFixtureDef( 0.15f, -0.5f, 0.3f, false, PhysicsManager.DROP_CAT, DROP_MASK, (short)0 );

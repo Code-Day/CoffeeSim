@@ -49,6 +49,7 @@ public class CoffeeSimMainActivity extends BaseGameActivity {
 		Display display = getWindowManager().getDefaultDisplay();
 		DisplayMetrics outMetrics = new DisplayMetrics();
 		display.getMetrics(outMetrics);
+	
 		cameraWidth = outMetrics.widthPixels;
 		cameraHeight = outMetrics.heightPixels;
 		
@@ -59,6 +60,7 @@ public class CoffeeSimMainActivity extends BaseGameActivity {
 		EngineOptions options = new EngineOptions(true,
 				ScreenOrientation.PORTRAIT_FIXED, new RatioResolutionPolicy(
 						cameraWidth, cameraHeight), mCamera);
+		options.getTouchOptions().setNeedsMultiTouch(true);
 		
 		return options;
 	}
@@ -71,11 +73,9 @@ public class CoffeeSimMainActivity extends BaseGameActivity {
 		
 		//make the managers
 		resourceManager = new ResourceManager(mEngine, this);
-		gameManager = new GameManager(this, mEngine, resourceManager, physicsManager);		
-		physicsManager = new PhysicsManager();
 		sceneManager = new SceneManager(this, mEngine, resourceManager);
-
-		
+		physicsManager = new PhysicsManager(mEngine, sceneManager, resourceManager);
+		gameManager = new GameManager(this, mEngine, resourceManager, physicsManager);		
 		//load splash resources
 		resourceManager.onCreateSplashResources();
 
@@ -89,7 +89,7 @@ public class CoffeeSimMainActivity extends BaseGameActivity {
 		
 		//returns the splash scene
 		pOnCreateSceneCallback.onCreateSceneFinished(sceneManager
-				.createScene(AllScenes.SPLASH));
+				.createScene(AllScenes.SPLASH, null, null));
 		
 	}
 
@@ -113,9 +113,10 @@ public class CoffeeSimMainActivity extends BaseGameActivity {
 						// TODO Auto-generated method stub
 						mEngine.unregisterUpdateHandler(pTimerHandler);
 						resourceManager.onCreateResources();
-						sceneManager.createScene(AllScenes.MENU);
-						sceneManager.createScene(AllScenes.GAME);
+						sceneManager.createScene(AllScenes.MENU, physicsManager, gameManager);
+						sceneManager.createScene(AllScenes.GAME, physicsManager, gameManager);
 						sceneManager.setCurrentScene(AllScenes.MENU);
+						
 					}
 				}));
 		
