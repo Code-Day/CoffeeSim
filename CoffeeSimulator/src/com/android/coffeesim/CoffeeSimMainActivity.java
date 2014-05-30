@@ -49,6 +49,7 @@ public class CoffeeSimMainActivity extends BaseGameActivity {
 		Display display = getWindowManager().getDefaultDisplay();
 		DisplayMetrics outMetrics = new DisplayMetrics();
 		display.getMetrics(outMetrics);
+	
 		cameraWidth = outMetrics.widthPixels;
 		cameraHeight = outMetrics.heightPixels;
 		
@@ -59,6 +60,7 @@ public class CoffeeSimMainActivity extends BaseGameActivity {
 		EngineOptions options = new EngineOptions(true,
 				ScreenOrientation.PORTRAIT_FIXED, new RatioResolutionPolicy(
 						cameraWidth, cameraHeight), mCamera);
+		options.getTouchOptions().setNeedsMultiTouch(true);
 		
 		return options;
 	}

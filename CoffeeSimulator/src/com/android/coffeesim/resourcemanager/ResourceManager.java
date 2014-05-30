@@ -114,8 +114,8 @@ public class ResourceManager {
 		buttonCoffeeTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(buttonCoffeeTexture, activity,"button_coffee.png",0,0);
 		buttonLidTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(buttonLidTexture, activity,"button_lid.png",0,0);
 		speachTextTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(speachTextTexture, activity,"speech_text.png",0,0);
-		pressMainTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(speachTextTexture, activity,"press_main.png",0,0);
-		pressTopTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(speachTextTexture, activity,"speech_top.png",0,0);
+		pressMainTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(pressMainTexture, activity,"press_main.png",0,0);
+		pressTopTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(pressTopTexture, activity,"press_top.png",0,0);
 		
 		// load all the textures (can unload: playerTexture.unload();)
 		backgroundTexture.load();

@@ -40,9 +40,13 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 	public static final short DROP_CAT = 2;
 	public static final short COFF_CAT = 4;
 	public static final short FILTER_CAT = 8;
+	public static final short TOP_CAT = 16;
+	public static final short BAR_CAT = 32;
 	
+	private final short BAR_MASK = PhysicsManager.DROP_CAT + PhysicsManager.COFF_CAT + PhysicsManager.ENV_CAT;
+	private final short TOP_MASK = PhysicsManager.DROP_CAT + PhysicsManager.COFF_CAT + PhysicsManager.ENV_CAT;
 	private final short FILTER_MASK = PhysicsManager.COFF_CAT + PhysicsManager.ENV_CAT;
-	private final short ENV_MASK = PhysicsManager.COFF_CAT + PhysicsManager.ENV_CAT + PhysicsManager.DROP_CAT;
+	private final short ENV_MASK = COFF_CAT + ENV_CAT + DROP_CAT + FILTER_CAT + TOP_CAT + BAR_CAT;
 	
 	private SceneManager mSceneManager;
 	private ResourceManager mResourceManager;
@@ -59,6 +63,8 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 	
 	private FixtureDef filterFix;
 	private FixtureDef wallFix;
+	private FixtureDef barFix;
+	private FixtureDef topFix;
 	
 	private float cX;
 	private float cY;
@@ -68,9 +74,14 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 	private float H5;
 	private float H310;
 	private float H610;
+	private float H20;
+	private float H810;
 	private float H910;
 	
+	private float filterWidth;
+	private float topLen;
 	private float sideLen;
+	private float barLen;
 	private float halfSideLen;
 	private float bodyThickness;
 	private float halfThickness;
@@ -95,29 +106,35 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 		
 		createFixtureDefs ();
 		
+		float cW = mEngine.getCamera ().getWidth ();
+		float cH = mEngine.getCamera ().getHeight ();
 		cX = mEngine.getCamera ().getCenterX ();
-		cY = mEngine.getCamera ().getHeight () - ( mEngine.getCamera ().getHeight () * .2f );
-		W910 = ( mEngine.getCamera ().getWidth () / 10 ) * 9;
-		W10 = mEngine.getCamera ().getWidth () / 10;
-		H10 = mEngine.getCamera ().getHeight () / 10;
-		H5 = mEngine.getCamera ().getHeight () / 5;
-		H310 = ( mEngine.getCamera ().getHeight () / 10 ) * 3;
-		H610 = ( mEngine.getCamera ().getHeight () / 10 ) * 6;
-		H910 = ( mEngine.getCamera ().getHeight () / 10 ) * 9;
+		//cY = mEngine.getCamera ().getHeight () - ( mEngine.getCamera ().getHeight () * .2f );
+		W910 = ( cW / 10 ) * 9;
+		W10 = cW / 10;
+		H10 = cH / 10;
+		//H5 = cH / 5;
+		H310 = ( cH / 10 ) * 3;
+		H610 = ( cH / 10 ) * 6;
+		H20 = ( cH / 20 );
+		H810 = ( cH / 10 ) * 8;
+		H910 = ( cH / 10 ) * 9;
 		
-		sideLen = ( mEngine.getCamera ().getWidth () * .34f );
-		halfSideLen = ( mEngine.getCamera ().getWidth () * .34f ) / 2;
-		bodyThickness = 3;
-		halfThickness = bodyThickness / 2;
-		
-		
-		
+		filterWidth = ( cW / 10 ) * 7;
+		topLen = ( cW / 10 ) * 8;
+		sideLen = ( cH / 10 ) * 5;
+		barLen = ( cH / 10 ) * 5;
+		halfSideLen = sideLen / 2;
+		bodyThickness = 5;
+		halfThickness = bodyThickness / 2;		
 	}
 	
 	private void createFixtureDefs ()
 	{
-		wallFix = PhysicsFactory.createFixtureDef(0, 0.5f, 0.5f, false, ENV_CAT, ENV_MASK, (short)0);
-		filterFix = PhysicsFactory.createFixtureDef(0, 0.5f, 0.5f, false, FILTER_CAT, FILTER_MASK, (short)0);
+		wallFix = PhysicsFactory.createFixtureDef(0, 0.25f, 0.5f, false, ENV_CAT, ENV_MASK, (short)0);
+		filterFix = PhysicsFactory.createFixtureDef(.5f, 0.0f, 0.5f, false, FILTER_CAT, FILTER_MASK, (short)0);
+		barFix = PhysicsFactory.createFixtureDef(.5f, 0.0f, 0.5f, false, BAR_CAT, BAR_MASK, (short)0);
+		topFix = PhysicsFactory.createFixtureDef(.5f, 0.0f, 0.5f, false, TOP_CAT, TOP_MASK, (short)0);
 	}
 	
 	public void dispose ()
@@ -135,6 +152,8 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 		createCoffeePress ();
 		createCoffeePot ();
 		
+		mSceneManager.getGameScene ().setOnSceneTouchListener(this);
+		mSceneManager.getGameScene ().setOnAreaTouchListener(this);
 		mSceneManager.getGameScene ().registerUpdateHandler ( mPhysWorld );
 	}
 	
@@ -159,33 +178,33 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 	
 	private void createCoffeePot ()
 	{			
-		Rectangle ground = new Rectangle ( cX, H910, sideLen, bodyThickness, this.mVertexBufferObjectManager );
+		Rectangle ground = new Rectangle ( cX, H810, topLen, bodyThickness, this.mVertexBufferObjectManager );
 		ground.setColor ( 0, 0, 1f );
-		Rectangle left = new Rectangle ( W10 - halfThickness, H610 - halfSideLen, bodyThickness, sideLen, this.mVertexBufferObjectManager );
+		Rectangle left = new Rectangle ( W10, H610, bodyThickness, sideLen, this.mVertexBufferObjectManager );
 		left.setColor ( 0, 1f, 0 );
-		Rectangle right = new Rectangle ( W910  - halfThickness, H610 - halfSideLen, bodyThickness, sideLen, this.mVertexBufferObjectManager );
+		Rectangle right = new Rectangle ( W910, H610, bodyThickness, sideLen, this.mVertexBufferObjectManager );
 		right.setColor ( 1f, 0, 0 );
 		
-		Body groundBody = PhysicsFactory.createBoxBody(this.mPhysWorld, cX, H910, sideLen, bodyThickness, BodyType.StaticBody, wallFix);
-		Body leftBody = PhysicsFactory.createBoxBody(this.mPhysWorld, W10, H610, bodyThickness, sideLen, BodyType.StaticBody, wallFix);
-		Body rightBody = PhysicsFactory.createBoxBody(this.mPhysWorld, W910, H610, bodyThickness, sideLen, BodyType.StaticBody, wallFix);
+		Body groundBody = PhysicsFactory.createBoxBody(this.mPhysWorld, cX, H810, topLen, bodyThickness, BodyType.StaticBody, wallFix);
+		Body leftBody = PhysicsFactory.createBoxBody(this.mPhysWorld, W10, H610 - H20, bodyThickness, sideLen, BodyType.StaticBody, wallFix);
+		Body rightBody = PhysicsFactory.createBoxBody(this.mPhysWorld, W910, H610 - H20, bodyThickness, sideLen, BodyType.StaticBody, wallFix);
 		
 		mBodies.add ( groundBody );
 		mBodies.add ( leftBody );
 		mBodies.add ( rightBody );
 		
-		this.createWeldJointBetween ( groundBody, leftBody,
-				(W10)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT,
-				(H910)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT );
-		this.createWeldJointBetween ( groundBody, rightBody, 
-				(W910)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT,
-				(H910)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT );
+		this.createWeldJointBetween ( groundBody, leftBody,	(W10), (H810));
+		this.createWeldJointBetween ( groundBody, rightBody, (W910), (H810));
 		
-//		Sprite coffeePotSprite = mResourceManager.makeDatSprite ( "coffeepot", W10 - halfThickness, H610 - halfSideLen );
-//		coffeePotSprite.setSize ( sideLen, sideLen );
-//		
-//		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( coffeePotSprite, groundBody, false, false ) );
-//		mSceneManager.getGameScene ().attachChild ( coffeePotSprite );
+		Sprite coffeePotSprite = mResourceManager.makeDatSprite ( "press_main", W10 - halfThickness, H610 - halfSideLen );
+		coffeePotSprite.setSize ( sideLen, sideLen );
+		
+		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( coffeePotSprite, groundBody, false, false ) );
+		mSceneManager.getGameScene ().attachChild ( coffeePotSprite );
+
+		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( ground, groundBody, true, false ) );
+		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( left, leftBody, true, false ) );
+		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( right, rightBody, true, false ) );
 		
 		mSceneManager.getGameScene ().attachChild ( ground );
 		mSceneManager.getGameScene ().attachChild ( left );
@@ -194,31 +213,45 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 	
 	private void createCoffeePress ()
 	{
-		Rectangle handleTop = new Rectangle ( cX - 16, H10 - 16, 32, 32, this.mVertexBufferObjectManager );
+		Rectangle handleTop = new Rectangle ( 0, 0, 64, 64, this.mVertexBufferObjectManager );
 		handleTop.setColor ( 0, 0, 1f );
-		Rectangle handleBar = new Rectangle ( cX - halfThickness, H5 - halfSideLen, bodyThickness, sideLen, this.mVertexBufferObjectManager );
+		Rectangle handleBar = new Rectangle ( 0, 0, bodyThickness, barLen, this.mVertexBufferObjectManager );
 		handleBar.setColor ( 0, 1f, 0 );
-		Rectangle filter = new Rectangle ( cX - halfSideLen, H310 - halfThickness, sideLen, bodyThickness, this.mVertexBufferObjectManager );
+		Rectangle filter = new Rectangle ( 0, 0, filterWidth, bodyThickness, this.mVertexBufferObjectManager );
 		filter.setColor ( 1f, 0, 0 );
 		
-		Body handleTopBody = PhysicsFactory.createCircleBody ( this.mPhysWorld, cX, H10, 32, BodyType.StaticBody, wallFix );
-		Body handleBarBody = PhysicsFactory.createBoxBody ( this.mPhysWorld, cX, H5, bodyThickness, sideLen, BodyType.StaticBody, wallFix );
-		Body filterBody = PhysicsFactory.createBoxBody ( this.mPhysWorld, cX, H310, sideLen, bodyThickness, BodyType.StaticBody, filterFix );
+		Body handleTopBody = PhysicsFactory.createCircleBody ( this.mPhysWorld, cX, H10 - barLen / 2 - H20, 32, BodyType.DynamicBody, topFix );
+		Body handleBarBody = PhysicsFactory.createBoxBody ( this.mPhysWorld, cX, H10 - H20, bodyThickness, barLen, BodyType.DynamicBody, barFix );
+		Body filterBody = PhysicsFactory.createBoxBody ( this.mPhysWorld, cX, H310, filterWidth, bodyThickness, BodyType.DynamicBody, filterFix );
+		Body lineJointBody = PhysicsFactory.createBoxBody ( this.mPhysWorld, cX, H310, bodyThickness, H10 * 10, BodyType.StaticBody, barFix );
 		
 		mBodies.add ( handleTopBody );
-		mBodies.add ( handleTopBody );
+		mBodies.add ( handleBarBody );
 		mBodies.add ( filterBody );
+		mBodies.add ( lineJointBody );
 		
 		this.createWeldJointBetween ( handleTopBody, handleBarBody,
-				(cX)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT,
-				(H10)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT );
-		this.createWeldJointBetween ( handleBarBody, filterBody, 
-				(cX)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT,
-				(H310)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT );
+				(cX/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT), (H10 - barLen / 2 - H20)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT);
 		
-		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( handleTop, handleTopBody, true, false ) );
-		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( handleBar, handleBarBody, true, false ) );
-		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( filter, filterBody, true, false ) );
+		this.createWeldJointBetween ( handleBarBody, filterBody,
+				(cX)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (H310)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT);
+		
+		this.createLineJointBetween ( lineJointBody, filterBody,
+				(cX)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (H310)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT);
+		
+		this.createLineJointBetween ( lineJointBody, handleTopBody,
+				(cX)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT, (H10 - barLen / 2 - H20)/PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT);
+		
+		handleTop.setUserData ( handleTopBody );
+		mSceneManager.getGameScene ().registerTouchArea ( handleTop );
+		handleBar.setUserData ( handleBarBody );
+		mSceneManager.getGameScene ().registerTouchArea ( handleBar );
+		filter.setUserData ( filterBody );
+		mSceneManager.getGameScene ().registerTouchArea ( filter );
+		
+		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( handleTop, handleTopBody, true, true ) );
+		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( handleBar, handleBarBody, true, true ) );
+		mPhysWorld.registerPhysicsConnector ( new PhysicsConnector ( filter, filterBody, true, true ) );
 		mSceneManager.getGameScene ().attachChild ( handleTop );
 		mSceneManager.getGameScene ().attachChild ( handleBar );
 		mSceneManager.getGameScene ().attachChild ( filter );
@@ -256,6 +289,7 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 	@ Override
 	public boolean onSceneTouchEvent ( final Scene pScene, final TouchEvent pSceneTouchEvent )
 	{
+		System.out.println ( "Touch" );
 		if ( this.mPhysWorld != null )
 		{
 			switch ( pSceneTouchEvent.getAction () )
@@ -267,7 +301,7 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 					{
 						final Vector2 vec = Vector2Pool.obtain ( 
 								pSceneTouchEvent.getX () / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT,
-								pSceneTouchEvent.getY () / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT );
+								pSceneTouchEvent.getY () / PhysicsConstants.PIXEL_TO_METER_RATIO_DEFAULT);
 						mMiceMap.get ( pSceneTouchEvent.getPointerID () ).setTarget ( vec );
 						Vector2Pool.recycle ( vec );
 					}
@@ -324,11 +358,14 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 	private void createLineJointBetween ( final Body pA, final Body pB, final float pAnchorX, final float pAnchorY )
 	{
 		final Vector2 anchor = Vector2Pool.obtain (pAnchorX, pAnchorY);
-		final Vector2 axis = Vector2Pool.obtain (0, 10);
-		final LineJointDef prisJointDef = new LineJointDef ();
-		prisJointDef.initialize ( pA, pB, anchor, axis );
-		prisJointDef.collideConnected = true;
-		mPhysWorld.createJoint ( prisJointDef );
+		final Vector2 axis = Vector2Pool.obtain (0f, 1.0f);
+		final LineJointDef lineJointDef = new LineJointDef ();
+		lineJointDef.initialize ( pA, pB, anchor, axis );
+		lineJointDef.collideConnected = true;
+		lineJointDef.enableLimit = true;
+		lineJointDef.lowerTranslation = 0;
+		lineJointDef.upperTranslation = H10 * 10;
+		mJoints.add ( mPhysWorld.createJoint ( lineJointDef ) );
 		Vector2Pool.recycle ( anchor );
 	}
 	
@@ -338,7 +375,7 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 		final WeldJointDef weldJointDef = new WeldJointDef ();
 		weldJointDef.initialize ( pA, pB, anchor );
 		weldJointDef.collideConnected = true;
-		mPhysWorld.createJoint ( weldJointDef );
+		mJoints.add ( mPhysWorld.createJoint ( weldJointDef ) );
 		Vector2Pool.recycle ( anchor );
 	}
 	
@@ -349,7 +386,8 @@ public class PhysicsManager implements IOnSceneTouchListener, IOnAreaTouchListen
 		final DistanceJointDef distJointDef = new DistanceJointDef ();
 		distJointDef.initialize ( pA, pB, anchorA, anchorB );
 		distJointDef.collideConnected = true;
-		mPhysWorld.createJoint ( distJointDef );
+		mJoints.add ( mPhysWorld.createJoint ( distJointDef ) );
+		
 		Vector2Pool.recycle ( anchorA );
 		Vector2Pool.recycle ( anchorB );
 	}
